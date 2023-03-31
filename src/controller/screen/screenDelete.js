@@ -1,10 +1,11 @@
 const { Op } = require('sequelize')
 const Screen = require('../../models/screens')
 const { respond } = require('../../../helper')
+const { ROLE, RESPONSE } = require('../../../config')
 
 async function screenDelete ( req, res ) {
-    if (req.role_id !== 1 && req.role_id !== 2) {
-        return respond.err(res , "Access not provided!")
+    if (req.role_id !== ROLE.ADMIN && req.role_id !== ROLE.EMPLOYEE) {
+        return respond.err(res , RESPONSE.USER_ACCESS)
     }
 
     try {
@@ -12,7 +13,7 @@ async function screenDelete ( req, res ) {
         await Screen.destroy({ where: { screen_id: screen.screen_id } })
         return respond.ok(res , { screen_id: screen.screen_id })
     } catch (error) {
-        return respond.err(res , "Cannot Delete Movie")
+        return respond.err(res , RESPONSE.INVALID)
     } 
 }
 

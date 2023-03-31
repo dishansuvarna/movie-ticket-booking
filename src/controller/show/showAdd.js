@@ -3,20 +3,21 @@ const Screen = require('../../models/screens')
 const MovieCinema = require('../../models/movieCinemas')
 const Show = require('../../models/shows')
 const { respond } = require('../../../helper')
+const { ROLE, RESPONSE } = require('../../../config')
 
 async function showAdd ( req, res ) {
-    if (req.role_id !== 1 && req.role_id !== 2) {
-        return respond.err(res , "Access not Provided!")
+    if (req.role_id !== ROLE.ADMIN && req.role_id !== ROLE.EMPLOYEE) {
+        return respond.err(res , RESPONSE.USER_ACCESS)
     }
 
     const movieCinemas = await MovieCinema.findOne({ where: { movie_cinema_id: req.body.mvcn_id } })
     if (!movieCinemas) {
-        return respond.err(res , "Please Provide a Valid ID")
+        return respond.err(res , RESPONSE.INVALID_ID)
     }
 
     const screen = await Screen.findOne({ where: { screen_id: req.body.screen_id } })
     if (!screen) {
-        return respond.err(res , "Please Provide a Valid Screen ID")
+        return respond.err(res , RESPONSE.INVALID_ID)
     }
 
     try {
@@ -27,7 +28,7 @@ async function showAdd ( req, res ) {
         })
         return respond.ok(res , { show_id: show.show_id , movie_cinema_id: movieCinemas.movie_cinema_id , screen_id: screen.screen_id , start_time: show.start_time })
     } catch (error) {
-        return respond.err(res , "Invalid Credentials")
+        return respond.err(res , RESPONSE.INVALID)
     }
 }
 

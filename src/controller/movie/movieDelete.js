@@ -1,10 +1,11 @@
 const { Op } = require('sequelize')
 const Movie = require('../../models/movies')
 const { respond } = require('../../../helper')
+const { ROLE, RESPONSE } = require('../../../config')
 
 async function movieDelete ( req, res ) {
-    if (req.role_id !== 1) {
-        return respond.err(res , "Access not provided!")
+    if (req.role_id !== ROLE.ADMIN) {
+        return respond.err(res , RESPONSE.USER_ACCESS)
     }
 
     try {
@@ -12,7 +13,7 @@ async function movieDelete ( req, res ) {
         await Movie.destroy({ where: { movie_id: movie.movie_id } })
         return respond.ok(res , { movie_id: movie.movie_id })
     } catch (error) {
-        return respond.err(res , "Cannot Delete Movie")
+        return respond.err(res , RESPONSE.INVALID)
     } 
 }
 

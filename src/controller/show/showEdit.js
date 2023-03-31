@@ -3,10 +3,11 @@ const Show = require('../../models/shows')
 const MovieCinema = require('../../models/movieCinemas')
 const Screen = require('../../models/screens')
 const { respond } = require('../../../helper')
+const { ROLE, RESPONSE } = require('../../../config')
 
 async function showEdit ( req, res ) {
-    if (req.role_id !== 1 && req.role_id !== 2) {
-        return respond.err(res , "Access not Provided!")
+    if (req.role_id !== ROLE.ADMIN && req.role_id !== ROLE.EMPLOYEE) {
+        return respond.err(res , RESPONSE.USER_ACCESS)
     }
     
     const isExist = await Show.findOne({
@@ -14,13 +15,13 @@ async function showEdit ( req, res ) {
     })
 
     if(!isExist) {
-        return respond.err(res , "Show doesn't Exist!")
+        return respond.err(res , RESPONSE.SHOW_NOT_FOUND)
     }
 
     if (req.body.movie_cinema_id !== undefined) {
         const movieCinema = await MovieCinema.findOne({ where: { movie_cinema_id: req.body.movie_cinema_id } })
         if (!movieCinema) {
-            return respond.err(res , "Provide a Valid ID")
+            return respond.err(res , RESPONSE.INVALID_ID)
         }
         try {
             await Show.update({
@@ -29,14 +30,14 @@ async function showEdit ( req, res ) {
                 where: { show_id: req.body.show_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
     if (req.body.screen_id !== undefined) {
         const screen = await Screen.findOne({ where: { screen_id: req.body.screen_id } })
         if (!screen) {
-            return respond.err(res , "Provide a Valid ID")
+            return respond.err(res , RESPONSE.INVALID_ID)
         }
         try {
             await Show.update({
@@ -45,7 +46,7 @@ async function showEdit ( req, res ) {
                 where: { show_id: req.body.show_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -57,7 +58,7 @@ async function showEdit ( req, res ) {
                 where: { show_id: req.body.show_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 

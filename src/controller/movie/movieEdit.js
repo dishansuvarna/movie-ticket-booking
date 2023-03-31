@@ -1,10 +1,11 @@
 const { Op } = require('sequelize')
 const Movie = require('../../models/movies')
 const { respond } = require('../../../helper')
+const { ROLE, RESPONSE } = require('../../../config')
 
 async function movieEdit ( req, res ) {
-    if (req.role_id !== 1) {
-        return respond.err(res , "Access not Provided!")
+    if (req.role_id !== ROLE.ADMIN) {
+        return respond.err(res , RESPONSE.USER_ACCESS)
     }
     
     const isExist = await Movie.findOne({
@@ -12,7 +13,7 @@ async function movieEdit ( req, res ) {
     })
 
     if(!isExist) {
-        return respond.err(res , "Movie doesn't Exist!")
+        return respond.err(res , RESPONSE.MOVIE_NOT_FOUND)
     }
 
     if (req.body.movie_name !== undefined) {
@@ -23,7 +24,7 @@ async function movieEdit ( req, res ) {
                 where: { movie_id: req.body.movie_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -35,7 +36,7 @@ async function movieEdit ( req, res ) {
                 where: { movie_id: req.body.movie_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -47,7 +48,7 @@ async function movieEdit ( req, res ) {
                 where: { movie_id: req.body.movie_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -59,7 +60,7 @@ async function movieEdit ( req, res ) {
                 where: { movie_id: req.body.movie_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -71,7 +72,7 @@ async function movieEdit ( req, res ) {
                 where: { movie_id: req.body.movie_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -83,7 +84,7 @@ async function movieEdit ( req, res ) {
                 where: { movie_id: req.body.movie_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 

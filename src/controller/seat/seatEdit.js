@@ -2,10 +2,11 @@ const { Op } = require('sequelize')
 const Seat = require('../../models/seats')
 const Screen = require('../../models/screens')
 const { respond } = require('../../../helper')
+const { ROLE, RESPONSE } = require('../../../config')
 
 async function seatEdit ( req, res ) {
-    if (req.role_id !== 1 && req.role_id !== 2) {
-        return respond.err(res , "Access not Provided!")
+    if (req.role_id !== ROLE.ADMIN && req.role_id !== ROLE.EMPLOYEE) {
+        return respond.err(res , RESPONSE.USER_ACCESS)
     }
     
     const isExist = await Seat.findOne({
@@ -13,13 +14,13 @@ async function seatEdit ( req, res ) {
     })
 
     if(!isExist) {
-        return respond.err(res , "Seat doesn't Exist!")
+        return respond.err(res , RESPONSE.SEAT_NOT_FOUND)
     }
 
     if (req.body.screen_id !== undefined) {
         const screen = await Screen.findOne({ where: { screen_id: req.body.screen_id } })
         if (!screen) {
-            return respond.err(res , "Provide a Valid ID")
+            return respond.err(res , RESPONSE.INVALID_ID)
         }
         try {
             await Seat.update({
@@ -28,7 +29,7 @@ async function seatEdit ( req, res ) {
                 where: { seat_id: req.body.seat_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -40,7 +41,7 @@ async function seatEdit ( req, res ) {
                 where: { seat_id: req.body.seat_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -52,7 +53,7 @@ async function seatEdit ( req, res ) {
                 where: { seat_id: req.body.seat_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -64,7 +65,7 @@ async function seatEdit ( req, res ) {
                 where: { seat_id: req.body.seat_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 

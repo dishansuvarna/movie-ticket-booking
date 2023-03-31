@@ -1,10 +1,11 @@
 const { Op } = require('sequelize')
 const Cinema = require('../../models/cinemas')
 const { respond } = require('../../../helper')
+const { ROLE, RESPONSE } = require('../../../config')
 
 async function cinemaEdit ( req, res ) {
-    if (req.role_id !== 1) {
-        return respond.err(res , "Access not Provided!")
+    if (req.role_id !== ROLE.ADMIN) {
+        return respond.err(res , RESPONSE.USER_ACCESS)
     }
     
     const isExist = await Cinema.findOne({
@@ -12,7 +13,7 @@ async function cinemaEdit ( req, res ) {
     })
 
     if(!isExist) {
-        return respond.err(res , "Cinema doesn't Exist!")
+        return respond.err(res , RESPONSE.CINEMA_NOT_FOUND)
     }
 
     if (req.body.name !== undefined) {
@@ -23,7 +24,7 @@ async function cinemaEdit ( req, res ) {
                 where: { cinema_id: req.body.cinema_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -35,7 +36,7 @@ async function cinemaEdit ( req, res ) {
                 where: { cinema_id: req.body.cinema_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -47,7 +48,7 @@ async function cinemaEdit ( req, res ) {
                 where: { cinema_id: req.body.cinema_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -59,7 +60,7 @@ async function cinemaEdit ( req, res ) {
                 where: { cinema_id: req.body.cinema_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 

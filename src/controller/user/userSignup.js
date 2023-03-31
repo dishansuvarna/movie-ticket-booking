@@ -4,6 +4,7 @@ const { Op } = require('sequelize')
 const User = require('../../models/users')
 const UserRole = require('../../models/userRoles')
 const { respond } = require('../../../helper')
+const { RESPONSE } = require('../../../config')
 
 async function userSignup ( req, res ) {
     const isExist = await User.findOne({
@@ -14,10 +15,10 @@ async function userSignup ( req, res ) {
         }
     })
     if(isExist) {
-        return res.status(400).send('User already exists.')
+        return respond.err(res , RESPONSE.USER_EXISTS)
     }
 
-    const hashedPassword = await bcrypt.hash(req.body.password, 8)
+    const hashedPassword = await bcrypt.hash(req.body.password, process.env.HASH_PASSWORD)
 
     try {
         const user = await User.create({
@@ -34,7 +35,7 @@ async function userSignup ( req, res ) {
         })
         return respond.ok(res , { user_id: user.user_id , token })
     } catch (error) {
-        respond.err(res , "Invalid Credentials")
+        respond.err(res , RESPONSE.INVALID)
     }
 }
 

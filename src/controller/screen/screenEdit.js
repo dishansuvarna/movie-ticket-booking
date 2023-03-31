@@ -2,10 +2,11 @@ const { Op } = require('sequelize')
 const Screen = require('../../models/screens')
 const Cinema = require('../../models/cinemas')
 const { respond } = require('../../../helper')
+const { ROLE, RESPONSE } = require('../../../config')
 
 async function screenEdit ( req, res ) {
-    if (req.role_id !== 1 && req.role_id !== 2) {
-        return respond.err(res , "Access not Provided!")
+    if (req.role_id !== ROLE.ADMIN && req.role_id !== ROLE.EMPLOYEE) {
+        return respond.err(res , RESPONSE.USER_ACCESS)
     }
     
     const isExist = await Screen.findOne({
@@ -13,13 +14,13 @@ async function screenEdit ( req, res ) {
     })
 
     if(!isExist) {
-        return respond.err(res , "Screen doesn't Exist!")
+        return respond.err(res , RESPONSE.SCREEN_NOT_FOUND)
     }
 
     if (req.body.cinema_id !== undefined) {
         const cinema = await Cinema.findOne({ where: { cinema_id: req.body.cinema_id } })
         if (!cinema) {
-            return respond.err(res , "Provide a Valid Cinema ID")
+            return respond.err(res , RESPONSE.INVALID_ID)
         }
         try {
             await Screen.update({
@@ -28,7 +29,7 @@ async function screenEdit ( req, res ) {
                 where: { screen_id: req.body.screen_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -40,7 +41,7 @@ async function screenEdit ( req, res ) {
                 where: { screen_id: req.body.screen_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 

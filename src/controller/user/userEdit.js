@@ -3,10 +3,11 @@ const { Op } = require('sequelize')
 const User = require('../../models/users')
 const UserRole = require('../../models/userRoles')
 const { respond } = require('../../../helper')
+const { ROLE, RESPONSE } = require('../../../config')
 
 async function userEdit ( req, res ) {
-    if (req.role_id !== 1 && req.user_id !== req.body.user_id) {
-        return respond.err(res , "Access not Provided!")
+    if (req.role_id !== ROLE.ADMIN && req.user_id !== req.body.user_id) {
+        return respond.err(res , RESPONSE.USER_ACCESS)
     }
     
     const isExist = await User.findOne({
@@ -14,7 +15,7 @@ async function userEdit ( req, res ) {
     })
 
     if(!isExist) {
-        return respond.err(res , "User doesn't Exist!")
+        return respond.err(res , RESPONSE.USER_NOT_FOUND)
     }
 
     if (req.body.email !== undefined) {
@@ -25,7 +26,7 @@ async function userEdit ( req, res ) {
                 where: { user_id: req.body.user_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -37,7 +38,7 @@ async function userEdit ( req, res ) {
                 where: { user_id: req.body.user_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -49,7 +50,7 @@ async function userEdit ( req, res ) {
                 where: { user_id: req.body.user_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -61,7 +62,7 @@ async function userEdit ( req, res ) {
                 where: { user_id: req.body.user_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 
@@ -74,7 +75,7 @@ async function userEdit ( req, res ) {
                 where: { user_id: req.body.user_id }
             })
         } catch (error) {
-            return respond.err(res , "Invalid Credentials")
+            return respond.err(res , RESPONSE.INVALID)
         }
     }
 

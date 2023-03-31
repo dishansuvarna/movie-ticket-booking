@@ -1,10 +1,11 @@
 const { Op } = require('sequelize')
 const Movie = require('../../models/movies')
 const { respond } = require('../../../helper')
+const { ROLE, RESPONSE } = require('../../../config')
 
 async function movieAdd ( req, res ) {
-    if (req.role_id !== 1) {
-        return respond.err(res , "Access not Provided!")
+    if (req.role_id !== ROLE.ADMIN) {
+        return respond.err(res , RESPONSE.USER_ACCESS)
     }
 
     try {
@@ -18,7 +19,7 @@ async function movieAdd ( req, res ) {
         })
         return respond.ok(res , { movie_id: movie.movie_id , movie_name: movie.movie_name , release_date: movie.release_date })
     } catch (error) {
-        return respond.err(res , "Invalid Credentials")
+        return respond.err(res , RESPONSE.INVALID)
     }
 }
 

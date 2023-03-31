@@ -1,16 +1,17 @@
 const Payment = require('../../models/payments')
 const Booking = require('../../models/bookings')
 const { respond } = require('../../../helper')
+const { RESPONSE } = require('../../../config')
 
 async function payment (req , res) {
     const booking = await Booking.findOne({ where: { user_id: req.user_id } , attributes: ["booking_id" , "show_id" , "total_price"] })
 
     if (req.body.card_number === undefined) {
-        return respond.err(res , "Enter the Card Number")
+        return respond.err(res , RESPONSE.CARD_NO)
     }
 
-    if (req.body.card_number.toString().length !== 16) {
-        return respond.err(res , "Invalid Card Number")
+    if (req.body.card_number.toString().length !== process.env.CARD_LENGTH) {
+        return respond.err(res , RESPONSE.CARD_NO)
     }
 
     try {
@@ -22,7 +23,7 @@ async function payment (req , res) {
         })
         respond.ok(res , payment)
     } catch (error) {
-        respond.err(res , "Invalid Credentials")
+        respond.err(res , RESPONSE.INVALID)
     }
 }
 

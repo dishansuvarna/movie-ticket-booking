@@ -3,10 +3,11 @@ const { Op } = require('sequelize')
 const User = require('../../models/users')
 const UserRole = require('../../models/userRoles')
 const { respond } = require('../../../helper')
+const { ROLE, RESPONSE } = require('../../../config')
 
 async function userAdd ( req, res ) {
-    if (req.role_id !== 1) {
-        return respond.err(res , "Access not Provided!")
+    if (req.role_id !== ROLE.ADMIN) {
+        return respond.err(res , RESPONSE.USER_ACCESS)
     }
     
     const isExist = await User.findOne({
@@ -17,10 +18,10 @@ async function userAdd ( req, res ) {
         }
     })
     if(isExist) {
-        return respond.err(res , "User already Exists!")
+        return respond.err(res , RESPONSE.USER_EXISTS)
     }
 
-    const hashedPassword = await bcrypt.hash(req.body.password, 8)
+    const hashedPassword = await bcrypt.hash(req.body.password, process.env.HASH_PASSWORD)
 
     try {
         const user = await User.create({
@@ -36,7 +37,7 @@ async function userAdd ( req, res ) {
         })
         return respond.ok(res , { user_id: user.user_id , email: user.email , name: user.name })
     } catch (error) {
-        return respond.err(res , "Invalid Credentials")
+        return respond.err(res , RESPONSE.INVALID)
     }
 }
 
