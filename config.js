@@ -4,6 +4,9 @@ module.exports = {
         EMPLOYEE: 2 ,
         CUSTOMER: 3
     } ,
+    SALT_LENGTH: 8 ,
+    CARD_LENGTH: 16 ,
+    JWT_SECRET: "thisisasampleproject" ,
     RESPONSE: {
         USER_ACCESS: {
             code: 1000 ,
@@ -48,6 +51,10 @@ module.exports = {
         CINEMA_NOT_FOUND: {
             code: 1010 ,
             msg: "Cinema not Found!"
+        } ,
+        PASSWORD: {
+            code: 1011 ,
+            msg: "Incorrect Password"
         }
     }
 }

@@ -7,7 +7,7 @@ async function movieEdit ( req, res ) {
     if (req.role_id !== ROLE.ADMIN) {
         return respond.err(res , RESPONSE.USER_ACCESS)
     }
-    
+
     const isExist = await Movie.findOne({
         where: { movie_id: req.body.movie_id }
     })
@@ -16,76 +16,19 @@ async function movieEdit ( req, res ) {
         return respond.err(res , RESPONSE.MOVIE_NOT_FOUND)
     }
 
-    if (req.body.movie_name !== undefined) {
-        try {
-            await Movie.update({
-                movie_name: req.body.movie_name
-            } , {
-                where: { movie_id: req.body.movie_id }
-            })
-        } catch (error) {
-            return respond.err(res , RESPONSE.INVALID)
-        }
-    }
-
-    if (req.body.duration !== undefined) {
-        try {
-            await Movie.update({
-                duration: req.body.duration
-            } , {
-                where: { movie_id: req.body.movie_id }
-            })
-        } catch (error) {
-            return respond.err(res , RESPONSE.INVALID)
-        }
-    }
-
-    if (req.body.genre !== undefined) {
-        try {
-            await Movie.update({
-                genre: req.body.genre
-            } , {
-                where: { movie_id: req.body.movie_id }
-            })
-        } catch (error) {
-            return respond.err(res , RESPONSE.INVALID)
-        }
-    }
-
-    if (req.body.language !== undefined) {
-        try {
-            await Movie.update({
-                language: req.body.language
-            } , {
-                where: { movie_id: req.body.movie_id }
-            })
-        } catch (error) {
-            return respond.err(res , RESPONSE.INVALID)
-        }
-    }
-
-    if (req.body.release_date !== undefined) {
-        try {
-            await Movie.update({
-                release_date: req.body.release_date
-            } , {
-                where: { movie_id: req.body.movie_id }
-            })
-        } catch (error) {
-            return respond.err(res , RESPONSE.INVALID)
-        }
-    }
-
-    if (req.body.country !== undefined) {
-        try {
-            await Movie.update({
-                country: req.body.country
-            } , {
-                where: { movie_id: req.body.movie_id }
-            })
-        } catch (error) {
-            return respond.err(res , RESPONSE.INVALID)
-        }
+    try {
+        await Movie.update({
+            movie_name: req.body.movie_name || isExist.movie_name,
+            duration: req.body.duration || isExist.duration,
+            genre: req.body.genre || isExist.genre,
+            language: req.body.language || isExist.language,
+            release_date: req.body.release_date || isExist.release_date,
+            country: req.body.country || isExist.country
+        }, {
+            where: { movie_id: req.body.movie_id }
+        })
+    } catch (error) {
+        return respond.err(res , RESPONSE.INVALID)
     }
 
     const movie = await Movie.findOne({

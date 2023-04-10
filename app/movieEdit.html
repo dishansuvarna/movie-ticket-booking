@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Booking</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="movieEdit">
+        <h1>MOVIES EDIT</h1>
+        <form id="movie-edit" action="" method="PATCH" onsubmit="return false;">
+            <label for="movie_id">Movie ID</label>
+            <input type="number" name="movie_id" id="movie_id">
+            <label for="movie_name">Movie Name</label>
+            <input type="text" name="movie_name" id="movie_name">
+            <label for="duration">Duration</label>
+            <input type="number" name="duration" id="duration">
+            <label for="genre">Genre</label>
+            <input type="number" name="genre" id="genre">
+            <label for="language">Language</label>
+            <input type="text" name="language" id="language">
+            <label for="release_date">Release Date</label>
+            <input type="date" name="release_date" id="release_date">
+            <label for="country">Country</label>
+            <input type="text" name="country" id="country">
+            <button type="submit" id="submit">EDIT</button>
+        </form>
+    </div>
+    <script type="text/javascript" id="movieEdit">
+        const movieEdit = document.querySelector('#movie-edit');
+
+        movieEdit.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const movie_id = movieEdit.movie_id.value
+            const movie_name = movieEdit.movie_name.value;
+            const duration = movieEdit.duration.value;
+            const genre = movieEdit.genre.value;
+            const language = movieEdit.language.value;
+            const release_date = movieEdit.release_date.value;
+            const country = movieEdit.country.value
+
+            try {
+                const response = await fetch('http://localhost:5000/movie/edit', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'token': localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({ movie_id, movie_name, duration, genre, language, release_date, country }) 
+                });
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    // login successful, do something with the data
+                    console.log(data);
+                    alert("Success")
+                } else {
+                    // login failed, display error message
+                    if (data.msg !== undefined) {
+                        alert(data.msg)
+                    } else {
+                        alert(data.error)
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    </script>
+</body>
+</html>

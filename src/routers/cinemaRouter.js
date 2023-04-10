@@ -7,7 +7,7 @@ const auth = require('../middleware/auth')
 const { respond } = require('../../helper')
 
 router.post("/add" , auth , require("../controller/cinema/cinemaAdd"))
-router.get("/list" , require("../controller/cinema/cinemaList"))
+router.post("/list" , require("../controller/cinema/cinemaList"))
 router.patch("/edit" , auth , require("../controller/cinema/cinemaEdit"))
 router.delete("/delete" , auth , require("../controller/cinema/cinemaDelete"))
 

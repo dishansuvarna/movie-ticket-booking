@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Booking</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="userEdit">
+        <h1>USER EDIT</h1>
+        <form id="user-edit" action="" method="PATCH" onsubmit="return false;">
+            <label for="user_id">User ID</label>
+            <input type="number" name="user_id" id="user_id">
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name">
+            <label for="email">Email</label>
+            <input type="email" name="username" id="email">
+            <label for="adhaar">Adhaar Number</label>
+            <input type="tel" name="adhaar" id="adhaar" minlength="12" maxlength="12">
+            <label for="phone">Phone Number</label>
+            <input type="tel" name="phone" id="phone" maxlength="10">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password">
+            <button type="submit" id="submit">EDIT</button>
+        </form>
+    </div>
+    <script type="text/javascript" id="userEdit">
+        const userEdit = document.querySelector('#user-edit');
+
+        userEdit.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const user_id = userEdit.user_id.value
+            const name = userEdit.name.value;
+            const email = userEdit.email.value;
+            const adhaar_no = userEdit.adhaar.value;
+            const phone_no = userEdit.phone.value;
+            const password = userEdit.password.value;
+
+            try {
+                const response = await fetch('http://localhost:5000/user/edit', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'token': localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({ user_id, name, email, adhaar_no, phone_no, password }) 
+                });
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    // login successful, do something with the data
+                    console.log(data);
+                    alert("Success")
+                } else {
+                    // login failed, display error message
+                    if (data.msg !== undefined) {
+                        alert(data.msg)
+                    } else {
+                        alert(data.error)
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    </script>
+</body>
+</html>

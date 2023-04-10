@@ -1,9 +1,10 @@
 const jwt = require('jsonwebtoken')
+const { JWT_SECRET } = require('../../config')
 
 const auth = async (req , res , next) => {
     try {
         const token = req.header('token')
-        const decoded = jwt.verify(token , process.env.JWT_SECRET)
+        const decoded = jwt.verify(token , JWT_SECRET)
         
         req.token = token
         req.user_id = decoded.user_id

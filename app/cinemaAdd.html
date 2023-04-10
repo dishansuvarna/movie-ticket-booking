@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Booking</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="cinemaAdd">
+        <h1>CINEMAS ADD</h1>
+        <form id="cinema-add" action="" method="POST" onsubmit="return false;">
+            <label for="name">Cinema Name</label>
+            <input type="text" name="cinema_name" id="name" required>
+            <label for="city">City</label>
+            <input type="text" name="city" id="city" required>
+            <label for="state">State</label>
+            <input type="text" name="state" id="state">
+            <label for="zip_code">Zip Code</label>
+            <input type="text" name="zip_code" id="zip_code">
+            <button type="submit" id="submit">ADD</button>
+        </form>
+    </div>
+    <script type="text/javascript" id="cinemaAdd">
+        const cinemaAdd = document.querySelector('#cinema-add');
+
+        cinemaAdd.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const name = cinemaAdd.name.value;
+            const city = cinemaAdd.city.value;
+            const state = cinemaAdd.state.value;
+            const zip_code = cinemaAdd.zip_code.value;
+
+            try {
+                const response = await fetch('http://localhost:5000/cinema/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'token': localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({ name, city, state, zip_code }) 
+                });
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    // login successful, do something with the data
+                    console.log(data);
+                    alert("Successfully Added the Cinema")
+                } else {
+                    // login failed, display error message
+                    if (data.msg !== undefined) {
+                        alert(data.msg)
+                    } else {
+                        alert(data.error)
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    </script>
+</body>
+</html>

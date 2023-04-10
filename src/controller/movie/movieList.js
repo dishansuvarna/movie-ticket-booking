@@ -3,23 +3,27 @@ const Movie = require('../../models/movies')
 const { respond } = require('../../../helper')
 const { RESPONSE } = require('../../../config')
 
-async function movieList ( req, res ) {
-    if (req.body.movie_name) {
-        const movie = await Movie.findAll({ where: { movie_name: req.body.movie_name } })
-        if (movie.length === 0) {
-            return respond.err(res , RESPONSE.MOVIE_NOT_FOUND)
-        }
-        return respond.ok(res , movie)
-    }
-    
+async function movieList(req, res) {
     try {
-        const movie = await Movie.findAll()
-        if (movie.length === 0) {
-            return respond.err(res , RESPONSE.MOVIE_NOT_FOUND)
-        }
-        return respond.ok(res , movie)
+      const { movie_name } = req.body;
+      let movies;
+      if (movie_name) {
+        movies = await Movie.findAll({
+          where: {
+            movie_name: {
+              [Op.like]: `%${movie_name}%`
+            }
+          }
+        });
+      } else {
+        movies = await Movie.findAll();
+      }
+      if (movies.length === 0) {
+        return respond.err(res, RESPONSE.MOVIE_NOT_FOUND);
+      }
+      return respond.ok(res, movies);
     } catch (error) {
-        return respond.err(res , RESPONSE.INVALID)
+      return respond.err(res, RESPONSE.INVALID);
     }
 }
 

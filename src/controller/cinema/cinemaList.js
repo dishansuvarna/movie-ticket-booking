@@ -3,23 +3,27 @@ const Cinema = require('../../models/cinemas')
 const { respond } = require('../../../helper')
 const { RESPONSE } = require('../../../config')
 
-async function cinemaList ( req, res ) {
-    if (req.body.name) {
-        const cinema = await Cinema.findAll({ where: { name: req.body.name } })
-        if (cinema.length === 0) {
-            return respond.err(res , RESPONSE.CINEMA_NOT_FOUND)
-        }
-        return respond.ok(res , cinema)
-    }
-    
+async function cinemaList (req, res) {
     try {
-        const cinema = await Cinema.findAll()
-        if (cinema.length === 0) {
-            return respond.err(res , RESPONSE.CINEMA_NOT_FOUND)
+        const { name } = req.body;
+        let cinemas;
+        if (name) {
+            cinemas = await Cinema.findAll({
+                where: {
+                    name: {
+                        [Op.like]: `%${name}%`
+                    }
+                }
+            });
+        } else {
+            cinemas = await Cinema.findAll();
         }
-        return respond.ok(res , cinema)
+        if (cinemas.length === 0) {
+            return respond.err(res, RESPONSE.CINEMA_NOT_FOUND);
+        }
+        return respond.ok(res, cinemas);
     } catch (error) {
-        return respond.err(res , RESPONSE.INVALID)
+        return respond.err(res, RESPONSE.INVALID);
     }
 }
 

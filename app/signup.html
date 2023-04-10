@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>Movie Ticket Booking</title>
+</head>
+<body>
+    <div class="signup">
+        <h1 class="signup">SIGNUP PAGE</h1>
+        <form id="signup-form" action="" method="POST" onsubmit="return false;">
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" required>
+            <label for="email">Email</label>
+            <input type="email" name="username" id="email" required>
+            <label for="adhaar">Adhaar Number</label>
+            <input type="tel" name="adhaar" id="adhaar" minlength="12" maxlength="12" required>
+            <label for="phone">Phone Number</label>
+            <input type="tel" name="phone" id="phone" maxlength="10">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+            <button type="submit" id="submit">SIGN UP</button>
+        </form>
+    </div>
+    <script type="text/javascript" id="signup">
+        const signupForm = document.querySelector('#signup-form');
+
+        signupForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const name = signupForm.name.value;
+            const email = signupForm.email.value;
+            const adhaar_no = signupForm.adhaar.value;
+            const phone_no = signupForm.phone.value;
+            const password = signupForm.password.value;
+
+            try {
+                const response = await fetch('http://localhost:5000/user/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, adhaar_no, phone_no, password }) 
+                });
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    // login successful, do something with the data
+                    console.log(data);
+                    localStorage.setItem('token', data.data.token)
+                    window.location = './home.html'
+                } else {
+                    // login failed, display error message
+                    console.log(data.msg);
+                    alert(data.msg)
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    </script>
+</body>
+</html>

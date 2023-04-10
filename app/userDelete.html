@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Booking</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div id="userList1">
+        <h1>USER DELETE</h1>
+        <form id="user-delete" action="" method="DELETE" onsubmit="return false;">
+            <label for="user_id">User ID</label>
+            <input type="number" name="user_id" id="user_id">
+            <button type="submit" id="submit">DELETE</button>
+        </form>
+    </div>
+    <script type="text/javascript" id="userList">
+        const userDelete = document.querySelector('#user-delete');
+
+        userDelete.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const user_id = userDelete.user_id.value
+
+            try {
+                const response = await fetch('http://localhost:5000/user/delete', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'token': localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({ user_id }) 
+                });
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    // login successful, do something with the data
+                    console.log(data);
+                    alert("Success")
+                } else {
+                    // login failed, display error message
+                    if (data.msg !== undefined) {
+                        alert(data.msg)
+                    } else {
+                        alert(data.error)
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    </script>
+</body>
+</html>

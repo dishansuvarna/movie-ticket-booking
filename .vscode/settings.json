@@ -1,5 +1,7 @@
 {
     "cSpell.words": [
-        "adhaar"
-    ]
+        "adhaar",
+        "signup"
+    ] ,
+    "files.autoSave": "afterDelay"
 }

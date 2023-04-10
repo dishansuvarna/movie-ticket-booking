@@ -1,7 +1,7 @@
 const Payment = require('../../models/payments')
 const Booking = require('../../models/bookings')
 const { respond } = require('../../../helper')
-const { RESPONSE } = require('../../../config')
+const { RESPONSE, CARD_LENGTH } = require('../../../config')
 
 async function payment (req , res) {
     const booking = await Booking.findOne({ where: { user_id: req.user_id } , attributes: ["booking_id" , "show_id" , "total_price"] })
@@ -10,7 +10,7 @@ async function payment (req , res) {
         return respond.err(res , RESPONSE.CARD_NO)
     }
 
-    if (req.body.card_number.toString().length !== process.env.CARD_LENGTH) {
+    if (req.body.card_number.toString().length !== CARD_LENGTH) {
         return respond.err(res , RESPONSE.CARD_NO)
     }
 

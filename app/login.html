@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>Movie Ticket Booking</title>
+</head>
+<body>
+    <div class="login">
+        <h1 class="login">LOGIN PAGE</h1>
+        <form id="login-form" action="" method="POST" onsubmit="return false;">
+            <label for="email">Username</label>
+            <input type="email" name="username" id="email">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password">
+            <button type="submit" id="submit">LOGIN</button>
+        </form>
+    </div>
+    <script type="text/javascript" id="login">
+        const loginForm = document.querySelector('#login-form');
+
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const email = loginForm.email.value;
+            const password = loginForm.password.value;
+
+            try {
+                const response = await fetch('http://localhost:5000/user/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    // login successful, do something with the data
+                    console.log(data);
+                    localStorage.setItem('token', data.data.token)
+                    if (data.data.role_id === 1) {
+                        window.location = './adminHome.html'
+                    } else if (data.data.role_id === 2) {
+                        window.location = './employeeHome.html'
+                    } else {
+                        window.location = "./home.html"
+                    }
+                } else {
+                    // login failed, display error message
+                    console.log(data.msg);
+                    alert(data.msg)
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    </script>
+</body>
+</html>

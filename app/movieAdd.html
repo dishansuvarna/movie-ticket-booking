@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Booking</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="movieAdd">
+        <h1>MOVIES ADD</h1>
+        <form id="movie-add" action="" method="POST" onsubmit="return false;">
+            <label for="movie_name">Name</label>
+            <input type="text" name="movie_name" id="movie_name" required>
+            <label for="duration">Duration</label>
+            <input type="number" name="duration" id="duration" required>
+            <label for="genre">Genre</label>
+            <input type="text" name="genre" id="genre">
+            <label for="language">Language</label>
+            <input type="text" name="language" id="language">
+            <label for="release_date">Release Date</label>
+            <input type="date" name="release_date" id="release_date">
+            <label for="country">Country</label>
+            <input type="text" name="country" id="country">
+            <button type="submit" id="submit">ADD</button>
+        </form>
+    </div>
+    <script type="text/javascript" id="movieAdd">
+        const movieAdd = document.querySelector('#movie-add');
+
+        movieAdd.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const movie_name = movieAdd.movie_name.value;
+            const duration = movieAdd.duration.value;
+            const genre = movieAdd.genre.value;
+            const language = movieAdd.language.value;
+            const release_date = movieAdd.release_date.value;
+            const country = movieAdd.country.value
+
+            try {
+                const response = await fetch('http://localhost:5000/movie/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'token': localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({ movie_name, duration, genre, language, release_date, country }) 
+                });
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    // login successful, do something with the data
+                    console.log(data);
+                    alert("Successfully Added the Movie")
+                } else {
+                    // login failed, display error message
+                    if (data.msg !== undefined) {
+                        alert(data.msg)
+                    } else {
+                        alert(data.error)
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    </script>
+</body>
+</html>

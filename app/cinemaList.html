@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Booking</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div id="cinemaList1">
+        <h1>CINEMAS LIST</h1>
+        <form id="cinema-list" action="" method="POST" onsubmit="return false;">
+            <label for="name">Cinema Name</label>
+            <input type="text" name="name" id="name">
+            <button type="submit" id="submit">LIST</button>
+        </form>
+    </div>
+    <div id="cinemaList2">
+        <script type="text/javascript" id="cinemaList">
+            const cinemaList = document.querySelector('#cinema-list');
+    
+            cinemaList.addEventListener('submit', async (event) => {
+                event.preventDefault();
+    
+                const name = cinemaList.name.value
+    
+                try {
+                    const response = await fetch('http://localhost:5000/cinema/list', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'token': localStorage.getItem('token')
+                        },
+                        body: JSON.stringify({ name }) 
+                    });
+    
+                    const data = await response.json();
+                    const dataElement = document.getElementById('cinemaList2');
+    
+                    if (data.code === 200) {
+                        // login successful, do something with the data
+                        console.log(data);
+                        alert("Success")
+                        if (data.data.length > 1) {
+                            dataElement.innerHTML = '';
+                            data.data.forEach((item) => {
+                                const itemElement = document.createElement('p')
+                                itemElement.innerHTML = JSON.stringify(item)
+                                dataElement.appendChild(itemElement)
+                            });
+                        } else {
+                            dataElement.innerHTML = '';
+                            const itemElement = document.createElement('p')
+                            itemElement.innerHTML = JSON.stringify(data.data)
+                            dataElement.appendChild(itemElement)
+                        }
+                    } else {
+                        // login failed, display error message
+                        if (data.msg !== undefined) {
+                            alert(data.msg)
+                        } else {
+                            alert(data.error)
+                        }
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

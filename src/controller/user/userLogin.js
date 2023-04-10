@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../../models/users')
 const UserRole = require('../../models/userRoles')
 const { respond } = require('../../../helper')
-const { RESPONSE } = require('../../../config')
+const { RESPONSE, JWT_SECRET } = require('../../../config')
 
 async function userLogin( req, res ) {
     try {
@@ -16,15 +16,15 @@ async function userLogin( req, res ) {
 
         if (userRole.role_id === 1) {
             if (req.body.password !== user.password) {
-                respond.err(res , 'Incorrect Password')
+                respond.err(res , RESPONSE.PASSWORD)
             }
         } else {
             if (!await bcrypt.compare(req.body.password, user.password)) {
-                respond.err(res , 'Incorrect Password')
+                respond.err(res , RESPONSE.PASSWORD)
             }
         }
 
-        const token = jwt.sign({ user_id: user.user_id , role_id: userRole.role_id } , process.env.JWT_SECRET)
+        const token = jwt.sign({ user_id: user.user_id , role_id: userRole.role_id } , JWT_SECRET)
         return respond.ok( res, {
             user_id: user.user_id , role_id: userRole.role_id , token
         })

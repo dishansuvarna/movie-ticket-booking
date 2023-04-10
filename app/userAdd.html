@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Booking</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="userAdd">
+        <h1>USER ADD</h1>
+        <form id="user-add" action="" method="POST" onsubmit="return false;">
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" required>
+            <label for="email">Email</label>
+            <input type="email" name="username" id="email" required>
+            <label for="adhaar">Adhaar Number</label>
+            <input type="tel" name="adhaar" id="adhaar" minlength="12" maxlength="12" required>
+            <label for="phone">Phone Number</label>
+            <input type="tel" name="phone" id="phone" maxlength="10">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+            <label for="role_id">Role ID</label>
+            <input type="number" name="role_id" id="role_id" required>
+            <button type="submit" id="submit">ADD</button>
+        </form>
+    </div>
+    <script type="text/javascript" id="userAdd">
+        const userAdd = document.querySelector('#user-add');
+
+        userAdd.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const name = userAdd.name.value;
+            const email = userAdd.email.value;
+            const adhaar_no = userAdd.adhaar.value;
+            const phone_no = userAdd.phone.value;
+            const password = userAdd.password.value;
+            const role_id = userAdd.role_id.value
+
+            try {
+                const response = await fetch('http://localhost:5000/user/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'token': localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({ name, email, adhaar_no, phone_no, password, role_id }) 
+                });
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    // login successful, do something with the data
+                    console.log(data);
+                    alert("Successfully Added the User")
+                } else {
+                    // login failed, display error message
+                    if (data.msg !== undefined) {
+                        alert(data.msg)
+                    } else {
+                        alert(data.error)
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    </script>
+</body>
+</html>

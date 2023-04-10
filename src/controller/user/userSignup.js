@@ -4,7 +4,7 @@ const { Op } = require('sequelize')
 const User = require('../../models/users')
 const UserRole = require('../../models/userRoles')
 const { respond } = require('../../../helper')
-const { RESPONSE } = require('../../../config')
+const { RESPONSE, JWT_SECRET, SALT_LENGTH } = require('../../../config')
 
 async function userSignup ( req, res ) {
     const isExist = await User.findOne({
@@ -18,7 +18,7 @@ async function userSignup ( req, res ) {
         return respond.err(res , RESPONSE.USER_EXISTS)
     }
 
-    const hashedPassword = await bcrypt.hash(req.body.password, process.env.HASH_PASSWORD)
+    const hashedPassword = await bcrypt.hash(req.body.password, SALT_LENGTH)
 
     try {
         const user = await User.create({
@@ -28,7 +28,7 @@ async function userSignup ( req, res ) {
             phone_no: req.body.phone_no ,
             password: hashedPassword
         })
-        const token = jwt.sign({ user_id: user.user_id , role_id: 3 } , process.env.JWT_SIGNUP)
+        const token = jwt.sign({ user_id: user.user_id , role_id: 3 } , JWT_SECRET)
         await UserRole.create({
             user_id: user.user_id ,
             role_id: 3

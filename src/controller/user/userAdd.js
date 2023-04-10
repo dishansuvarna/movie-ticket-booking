@@ -3,7 +3,7 @@ const { Op } = require('sequelize')
 const User = require('../../models/users')
 const UserRole = require('../../models/userRoles')
 const { respond } = require('../../../helper')
-const { ROLE, RESPONSE } = require('../../../config')
+const { ROLE, RESPONSE, SALT_LENGTH } = require('../../../config')
 
 async function userAdd ( req, res ) {
     if (req.role_id !== ROLE.ADMIN) {
@@ -21,7 +21,7 @@ async function userAdd ( req, res ) {
         return respond.err(res , RESPONSE.USER_EXISTS)
     }
 
-    const hashedPassword = await bcrypt.hash(req.body.password, process.env.HASH_PASSWORD)
+    const hashedPassword = await bcrypt.hash(req.body.password, SALT_LENGTH)
 
     try {
         const user = await User.create({
