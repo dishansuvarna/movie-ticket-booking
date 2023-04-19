@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Booking</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="movieCinema">
+        <h1>MOVIE ADD</h1>
+        <form id="movie-cinema" action="" method="POST" onsubmit="return false;">
+            <label for="cinema_id">Cinema ID</label>
+            <input type="text" name="cinema_id" id="cinema_id" required>
+            <label for="movie_id">Movie ID</label>
+            <input type="text" name="movie_id" id="movie_id" required>
+            <label for="release_date">Release Date</label>
+            <input type="date" name="release_date" id="release_date">
+            <label for="advance_booking_days">Advance Booking Days</label>
+            <input type="text" name="advance_booking_days" id="advance_booking_days" required>
+            <button type="submit" id="submit">ADD</button>
+        </form>
+    </div>
+    <script type="text/javascript" id="movieCinema">
+        const movieCinema = document.querySelector('#movie-cinema');
+
+        movieCinema.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const cinema_id = movieCinema.cinema_id.value;
+            const movie_id = movieCinema.movie_id.value;
+            const release_date = movieCinema.release_date.value
+            const days = movieCinema.advance_booking_days.value
+
+            try {
+                const response = await fetch('http://localhost:5000/cinema/movie/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'token': localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({ cinema_id, movie_id, release_date, days }) 
+                });
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    // login successful, do something with the data
+                    console.log(data);
+                    alert("Successfully Added the Movie")
+                } else {
+                    // login failed, display error message
+                    if (data.msg !== undefined) {
+                        alert(data.msg)
+                    } else {
+                        alert(data.error)
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    </script>
+</body>
+</html>

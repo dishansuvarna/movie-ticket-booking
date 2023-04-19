@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Booking</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="seatAdd">
+        <h1>SEAT ADD</h1>
+        <form id="seat-add" action="" method="POST" onsubmit="return false;">
+            <label for="seat_no">Seat No.</label>
+            <input type="text" name="seat_no" id="seat_no" required>
+            <label for="seat_type">Seat Type</label>
+            <input type="num" name="seat_type" id="seat_type" required>
+            <label for="screen_id">Screen ID</label>
+            <input type="num" name="screen_id" id="screen_id" required>
+            <label for="price">Price</label>
+            <input type="num" name="price" id="price" required>
+            <button type="submit" id="submit">ADD</button>
+        </form>
+    </div>
+    <script type="text/javascript" id="seatAdd">
+        const seatAdd = document.querySelector('#seat-add');
+
+        seatAdd.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const seat_no = seatAdd.seat_no.value;
+            const seat_type = seatAdd.seat_type.value;
+            const screen_id = seatAdd.screen_id.value;
+            const price = seatAdd.price.value;
+
+            try {
+                const response = await fetch('http://localhost:5000/cinema/seat/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'token': localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({ seat_no, seat_type, screen_id, price }) 
+                });
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    // login successful, do something with the data
+                    console.log(data);
+                    alert("Successfully Added the Seat")
+                } else {
+                    // login failed, display error message
+                    if (data.msg !== undefined) {
+                        alert(data.msg)
+                    } else {
+                        alert(data.error)
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    </script>
+</body>
+</html>

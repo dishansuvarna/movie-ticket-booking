@@ -8,30 +8,30 @@
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-    <div id="cinemaDelete">
-        <h1>CINEMA DELETE</h1>
-        <form id="cinema-delete" action="" method="DELETE" onsubmit="return false;">
-            <label for="cinema_id">Cinema ID</label>
-            <input type="number" name="cinema_id" id="cinema_id">
+    <div id="seatDelete">
+        <h1>SEAT DELETE</h1>
+        <form id="seat-delete" action="" method="DELETE" onsubmit="return false;">
+            <label for="seat_id">Seat ID</label>
+            <input type="number" name="seat_id" id="seat_id">
             <button type="submit" id="submit">DELETE</button>
         </form>
     </div>
-    <script type="text/javascript" id="userList">
-        const cinemaDelete = document.querySelector('#cinema-delete');
+    <script type="text/javascript" id="seatDelete">
+        const seatDelete = document.querySelector('#seat-delete');
 
-        cinemaDelete.addEventListener('submit', async (event) => {
+        seatDelete.addEventListener('submit', async (event) => {
             event.preventDefault();
 
-            const cinema_id = cinemaDelete.cinema_id.value
+            const seat_id = seatDelete.seat_id.value
 
             try {
-                const response = await fetch('http://localhost:5000/cinema/delete', {
+                const response = await fetch('http://localhost:5000/cinema/seat/delete', {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                         'token': localStorage.getItem('token')
                     },
-                    body: JSON.stringify({ cinema_id }) 
+                    body: JSON.stringify({ seat_id }) 
                 });
 
                 const data = await response.json();

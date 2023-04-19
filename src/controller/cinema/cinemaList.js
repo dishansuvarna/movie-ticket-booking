@@ -5,7 +5,7 @@ const { RESPONSE } = require('../../../config')
 
 async function cinemaList (req, res) {
     try {
-        const { name } = req.body;
+        const { name , cinema_id } = req.body;
         let cinemas;
         if (name) {
             cinemas = await Cinema.findAll({
@@ -13,6 +13,12 @@ async function cinemaList (req, res) {
                     name: {
                         [Op.like]: `%${name}%`
                     }
+                }
+            });
+        } else if (cinema_id) {
+            cinemas = await Cinema.findOne({
+                where: {
+                    cinema_id
                 }
             });
         } else {

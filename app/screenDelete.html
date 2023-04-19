@@ -8,30 +8,30 @@
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-    <div id="cinemaDelete">
-        <h1>CINEMA DELETE</h1>
-        <form id="cinema-delete" action="" method="DELETE" onsubmit="return false;">
-            <label for="cinema_id">Cinema ID</label>
-            <input type="number" name="cinema_id" id="cinema_id">
+    <div id="screenDelete">
+        <h1>SCREEN DELETE</h1>
+        <form id="screen-delete" action="" method="DELETE" onsubmit="return false;">
+            <label for="screen_id">Screen ID</label>
+            <input type="number" name="screen_id" id="screen_id">
             <button type="submit" id="submit">DELETE</button>
         </form>
     </div>
-    <script type="text/javascript" id="userList">
-        const cinemaDelete = document.querySelector('#cinema-delete');
+    <script type="text/javascript" id="screenDelete">
+        const screenDelete = document.querySelector('#screen-delete');
 
-        cinemaDelete.addEventListener('submit', async (event) => {
+        screenDelete.addEventListener('submit', async (event) => {
             event.preventDefault();
 
-            const cinema_id = cinemaDelete.cinema_id.value
+            const screen_id = screenDelete.screen_id.value
 
             try {
-                const response = await fetch('http://localhost:5000/cinema/delete', {
+                const response = await fetch('http://localhost:5000/cinema/screen/delete', {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                         'token': localStorage.getItem('token')
                     },
-                    body: JSON.stringify({ cinema_id }) 
+                    body: JSON.stringify({ screen_id }) 
                 });
 
                 const data = await response.json();

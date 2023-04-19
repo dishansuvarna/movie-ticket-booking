@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Booking</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="showAdd">
+        <h1>SHOW ADD</h1>
+        <form id="show-add" action="" method="POST" onsubmit="return false;">
+            <label for="movie_cinema_id">Movie Cinema ID</label>
+            <input type="number" name="movie_cinema_id" id="movie_cinema_id" required>
+            <label for="screen_id">Screen ID</label>
+            <input type="number" name="screen_id" id="screen_id" required>
+            <label for="start_time">Start Time</label>
+            <input type="time" name="start_time" id="start_time" required>
+            <button type="submit" id="submit">ADD</button>
+        </form>
+    </div>
+    <script type="text/javascript" id="showAdd">
+        const showAdd = document.querySelector('#show-add');
+
+        showAdd.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const movie_cinema_id = showAdd.movie_cinema_id.value;
+            const screen_id = showAdd.screen_id.value;
+            const start_time = showAdd.start_time.value
+
+            try {
+                const response = await fetch('http://localhost:5000/cinema/show/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'token': localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({ movie_cinema_id, screen_id, start_time }) 
+                });
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    // login successful, do something with the data
+                    console.log(data);
+                    alert("Successfully Added the Show")
+                } else {
+                    // login failed, display error message
+                    if (data.msg !== undefined) {
+                        alert(data.msg)
+                    } else {
+                        alert(data.error)
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    </script>
+</body>
+</html>

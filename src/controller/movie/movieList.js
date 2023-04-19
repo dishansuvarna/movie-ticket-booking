@@ -1,4 +1,4 @@
-const { Op } = require('sequelize')
+const { Op, Sequelize } = require('sequelize')
 const Movie = require('../../models/movies')
 const { respond } = require('../../../helper')
 const { RESPONSE } = require('../../../config')
@@ -12,11 +12,26 @@ async function movieList(req, res) {
           where: {
             movie_name: {
               [Op.like]: `%${movie_name}%`
+            } ,
+            release_date: {
+              [Op.gte]: Sequelize.DATE(new Date())
             }
-          }
+          } ,
+          order: [
+            ["release_date" , "ASC"]
+          ]
         });
       } else {
-        movies = await Movie.findAll();
+        movies = await Movie.findAll({
+          where: {
+            release_date: {
+              [Op.gte]: Sequelize.DATE(new Date())
+            }
+          } ,
+          order: [
+            ["release_date" , "ASC"]
+          ]
+        });
       }
       if (movies.length === 0) {
         return respond.err(res, RESPONSE.MOVIE_NOT_FOUND);

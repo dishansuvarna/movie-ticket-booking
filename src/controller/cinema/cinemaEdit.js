@@ -23,14 +23,14 @@ async function cinemaEdit ( req, res ) {
             state: req.body.state || isExist.state,
             zip_code: req.body.zip_code || isExist.zip_code
         }, {
-          where: { movie_id: req.body.movie_id }
+          where: { cinema_id: req.body.cinema_id }
         })
     } catch (error) {
         return respond.err(res , RESPONSE.INVALID)
     }
 
-    const cinema = await Movie.findOne({
-        where: { movie_id: req.body.movie_id }
+    const cinema = await Cinema.findOne({
+        where: { cinema_id: req.body.cinema_id }
     })
 
     return respond.ok(res , cinema)

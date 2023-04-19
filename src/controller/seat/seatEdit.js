@@ -17,7 +17,7 @@ async function seatEdit ( req, res ) {
         return respond.err(res , RESPONSE.SEAT_NOT_FOUND)
     }
 
-    if (req.body.screen_id !== undefined) {
+    if (req.body.screen_id) {
         const screen = await Screen.findOne({ where: { screen_id: req.body.screen_id } })
         if (!screen) {
             return respond.err(res , RESPONSE.INVALID_ID)
@@ -33,7 +33,7 @@ async function seatEdit ( req, res ) {
         }
     }
 
-    if (req.body.seat_no !== undefined) {
+    if (req.body.seat_no) {
         try {
             await Seat.update({
                 seat_no: req.body.seat_no
@@ -45,7 +45,7 @@ async function seatEdit ( req, res ) {
         }
     }
 
-    if (req.body.seat_type !== undefined) {
+    if (req.body.seat_type) {
         try {
             await Seat.update({
                 seat_type: req.body.seat_type
@@ -57,7 +57,7 @@ async function seatEdit ( req, res ) {
         }
     }
 
-    if (req.body.price !== undefined) {
+    if (req.body.price) {
         try {
             await Seat.update({
                 price: req.body.price

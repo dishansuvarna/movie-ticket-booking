@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Booking</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="seatEdit">
+        <h1>SEAT EDIT</h1>
+        <form id="seat-edit" action="" method="PATCH" onsubmit="return false;">
+            <label for="seat_id">Seat ID</label>
+            <input type="num" name="seat_id" id="seat_id">
+            <label for="seat_no">Seat No</label>
+            <input type="text" name="seat_no" id="seat_no">
+            <label for="seat_type">Seat Type</label>
+            <input type="num" name="seat_type" id="seat_type">
+            <label for="screen_id">Screen ID</label>
+            <input type="num" name="screen_id" id="screen_id">
+            <label for="price">Price</label>
+            <input type="num" name="price" id="price">
+            <button type="submit" id="submit">EDIT</button>
+        </form>
+    </div>
+    <script type="text/javascript" id="seatEdit">
+        const seatEdit = document.querySelector('#seat-edit');
+
+        seatEdit.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const seat_id = seatEdit.seat_id.value
+            const seat_no = seatEdit.seat_no.value;
+            const seat_type = seatEdit.seat_type.value
+            const screen_id = seatEdit.screen_id.value
+            const price = seatEdit.price.value
+
+            try {
+                const response = await fetch('http://localhost:5000/cinema/seat/edit', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'token': localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({ seat_id, seat_no, seat_type, screen_id, price }) 
+                });
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+                    console.log(data);
+                    alert("Success")
+                } else {
+                    if (data.msg !== undefined) {
+                        alert(data.msg)
+                    } else {
+                        alert(data.error)
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+    </script>
+</body>
+</html>

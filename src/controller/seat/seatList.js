@@ -6,7 +6,7 @@ const { RESPONSE } = require('../../../config')
 
 async function seatList ( req, res ) {
     try {
-        if (req.body.screen_id !== undefined) {
+        if (req.body.screen_id) {
             const screen = await Screen.findOne({ where: { screen_id: req.body.screen_id } , attributes: ["screen_id" , "name"]})
             if (!screen) {
                 return respond.err(res , RESPONSE.INVALID_ID)

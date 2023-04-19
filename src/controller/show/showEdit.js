@@ -18,7 +18,7 @@ async function showEdit ( req, res ) {
         return respond.err(res , RESPONSE.SHOW_NOT_FOUND)
     }
 
-    if (req.body.movie_cinema_id !== undefined) {
+    if (req.body.movie_cinema_id) {
         const movieCinema = await MovieCinema.findOne({ where: { movie_cinema_id: req.body.movie_cinema_id } })
         if (!movieCinema) {
             return respond.err(res , RESPONSE.INVALID_ID)
@@ -34,7 +34,7 @@ async function showEdit ( req, res ) {
         }
     }
 
-    if (req.body.screen_id !== undefined) {
+    if (req.body.screen_id) {
         const screen = await Screen.findOne({ where: { screen_id: req.body.screen_id } })
         if (!screen) {
             return respond.err(res , RESPONSE.INVALID_ID)

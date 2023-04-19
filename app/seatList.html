@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Booking</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div>
+        <h1>SEAT LIST</h1>
+        <form id="show-list" action="" method="POST" onsubmit="return false;">
+            <label for="screen_id">Screen ID</label>
+            <input type="text" name="screen_id" id="screen_id">
+            <button type="submit" id="submit">LIST</button>
+        </form>
+    </div>
+    <div id="seat-list">
+        <script type="text/javascript" id="seatList">
+            const seatList = document.querySelector('#show-list');
+    
+            seatList.addEventListener('submit', async (event) => {
+                event.preventDefault();
+    
+                const screen_id = seatList.screen_id.value
+    
+                try {
+                    const response = await fetch('http://localhost:5000/cinema/seat/list', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'token': localStorage.getItem('token')
+                        } ,
+                        body: JSON.stringify({ screen_id }) 
+                    });
+    
+                    const data = await response.json();
+    
+                    if (data.code === 200) {
+                        const vip = data.data.seat.filter(seat => seat.seat_type === 1)
+                        const gold = data.data.seat.filter(seat => seat.seat_type === 2)
+                        const silver = data.data.seat.filter(seat => seat.seat_type === 3)
+
+                        const seatList = document.getElementById('seat-list')
+                        seatList.innerHTML = `
+                            <div>
+                                <label>VIP</label>
+                                ${vip.map(seat => `<h4>${seat.seat_no}</h4>`).join('')}
+                            </div>
+                            <div>
+                                <label>Gold</label>
+                                ${gold.map(seat => `<h4>${seat.seat_no}</h4>`).join('')}
+                            </div>
+                            <div>
+                                <label>Silver</label>
+                                ${silver.map(seat => `<h4>${seat.seat_no}</h4>`).join('')}
+                            </div>
+                        `
+                    } else {
+                        if (data.msg !== undefined) {
+                            alert(data.msg)
+                        } else {
+                            alert(data.error)
+                        }
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

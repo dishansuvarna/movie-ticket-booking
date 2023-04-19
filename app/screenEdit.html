@@ -8,52 +8,44 @@
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-    <div class="cinemaEdit">
-        <h1>CINEMAS EDIT</h1>
-        <form id="cinema-edit" action="" method="PATCH" onsubmit="return false;">
+    <div class="screenEdit">
+        <h1>SCREEN EDIT</h1>
+        <form id="screen-edit" action="" method="PATCH" onsubmit="return false;">
+            <label for="screen_id">Screen ID</label>
+            <input type="num" name="screen_id" id="screen_id">
+            <label for="name">Screen Name</label>
+            <input type="text" name="name" id="name">
             <label for="cinema_id">Cinema ID</label>
             <input type="num" name="cinema_id" id="cinema_id">
-            <label for="name">Cinema Name</label>
-            <input type="text" name="name" id="name">
-            <label for="city">City</label>
-            <input type="text" name="city" id="city" required>
-            <label for="state">State</label>
-            <input type="text" name="state" id="state">
-            <label for="zip_code">Zip Code</label>
-            <input type="text" name="zip_code" id="zip_code">
             <button type="submit" id="submit">EDIT</button>
         </form>
     </div>
-    <script type="text/javascript" id="cinemaEdit">
-        const cinemaEdit = document.querySelector('#cinema-edit');
+    <script type="text/javascript" id="screenEdit">
+        const screenEdit = document.querySelector('#screen-edit');
 
-        cinemaEdit.addEventListener('submit', async (event) => {
+        screenEdit.addEventListener('submit', async (event) => {
             event.preventDefault();
 
-            const cinema_id = cinemaEdit.cinema_id.value
-            const name = cinemaEdit.name.value;
-            const city = cinemaEdit.city.value;
-            const state = cinemaEdit.state.value;
-            const zip_code = cinemaEdit.zip_code.value;
+            const screen_id = screenEdit.screen_id.value
+            const name = screenEdit.name.value;
+            const cinema_id = screenEdit.cinema_id.value
 
             try {
-                const response = await fetch('http://localhost:5000/cinema/edit', {
+                const response = await fetch('http://localhost:5000/cinema/screen/edit', {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
                         'token': localStorage.getItem('token')
                     },
-                    body: JSON.stringify({ cinema_id, name, city, state, zip_code }) 
+                    body: JSON.stringify({ screen_id, name, cinema_id }) 
                 });
 
                 const data = await response.json();
 
                 if (data.code === 200) {
-                    // login successful, do something with the data
                     console.log(data);
                     alert("Success")
                 } else {
-                    // login failed, display error message
                     if (data.msg !== undefined) {
                         alert(data.msg)
                     } else {

@@ -38,6 +38,10 @@ div {
     position: relative;
 }
 
+div#seat-list {
+    display: block;
+}
+
 img.background {
     position: absolute;
     left: 0px;

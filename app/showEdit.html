@@ -8,42 +8,39 @@
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-    <div class="cinemaEdit">
-        <h1>CINEMAS EDIT</h1>
-        <form id="cinema-edit" action="" method="PATCH" onsubmit="return false;">
-            <label for="cinema_id">Cinema ID</label>
-            <input type="num" name="cinema_id" id="cinema_id">
-            <label for="name">Cinema Name</label>
-            <input type="text" name="name" id="name">
-            <label for="city">City</label>
-            <input type="text" name="city" id="city" required>
-            <label for="state">State</label>
-            <input type="text" name="state" id="state">
-            <label for="zip_code">Zip Code</label>
-            <input type="text" name="zip_code" id="zip_code">
+    <div class="showEdit">
+        <h1>SHOW EDIT</h1>
+        <form id="show-edit" action="" method="PATCH" onsubmit="return false;">
+            <label for="show_id">Show ID</label>
+            <input type="number" name="show_id" id="show_id" required>
+            <label for="movie_cinema_id">Movie Cinema ID</label>
+            <input type="number" name="movie_cinema_id" id="movie_cinema_id">
+            <label for="screen_id">Screen ID</label>
+            <input type="number" name="screen_id" id="screen_id">
+            <label for="start_time">Start Time</label>
+            <input type="time" name="start_time" id="start_time">
             <button type="submit" id="submit">EDIT</button>
         </form>
     </div>
-    <script type="text/javascript" id="cinemaEdit">
-        const cinemaEdit = document.querySelector('#cinema-edit');
+    <script type="text/javascript" id="showEdit">
+        const showEdit = document.querySelector('#show-edit');
 
-        cinemaEdit.addEventListener('submit', async (event) => {
+        showEdit.addEventListener('submit', async (event) => {
             event.preventDefault();
 
-            const cinema_id = cinemaEdit.cinema_id.value
-            const name = cinemaEdit.name.value;
-            const city = cinemaEdit.city.value;
-            const state = cinemaEdit.state.value;
-            const zip_code = cinemaEdit.zip_code.value;
+            const show_id = showEdit.show_id.value
+            const movie_cinema_id = showEdit.movie_cinema_id.value;
+            const screen_id = showEdit.screen_id.value;
+            const start_time = showEdit.start_time.value
 
             try {
-                const response = await fetch('http://localhost:5000/cinema/edit', {
+                const response = await fetch('http://localhost:5000/cinema/show/edit', {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
                         'token': localStorage.getItem('token')
                     },
-                    body: JSON.stringify({ cinema_id, name, city, state, zip_code }) 
+                    body: JSON.stringify({ show_id, movie_cinema_id, screen_id, start_time }) 
                 });
 
                 const data = await response.json();

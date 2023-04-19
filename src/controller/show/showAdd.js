@@ -10,7 +10,7 @@ async function showAdd ( req, res ) {
         return respond.err(res , RESPONSE.USER_ACCESS)
     }
 
-    const movieCinemas = await MovieCinema.findOne({ where: { movie_cinema_id: req.body.mvcn_id } })
+    const movieCinemas = await MovieCinema.findOne({ where: { movie_cinema_id: req.body.movie_cinema_id } })
     if (!movieCinemas) {
         return respond.err(res , RESPONSE.INVALID_ID)
     }
