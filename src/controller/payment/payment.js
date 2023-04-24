@@ -10,8 +10,12 @@ async function payment (req , res) {
         return respond.err(res , RESPONSE.CARD_NO)
     }
 
-    if (req.body.card_number.toString().length !== CARD_LENGTH) {
-        return respond.err(res , RESPONSE.CARD_NO)
+    try {
+        if (req.body.card_number.toString().length !== CARD_LENGTH) {
+            return respond.err(res , RESPONSE.CARD_NO)
+        }
+    } catch (error) {
+        respond.err(res , RESPONSE.CARD_NO)
     }
 
     try {

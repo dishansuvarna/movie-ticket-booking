@@ -77,15 +77,16 @@ router.post("/seat/list" , require("../controller/seat/seatList"))
 router.patch("/seat/edit" , auth , require("../controller/seat/seatEdit"))
 router.delete("/seat/delete" , auth , require("../controller/seat/seatDelete"))
 
-router.post("/seatBook" , async (req , res) => {
+router.post("/seatBook/:seat_id" , async (req , res) => {
     try {
-        const seatBooked = await SeatBooked.findAll({ where: { seat_id: req.body.seat_id } })
+        const seatBooked = await SeatBooked.findAll({ where: { seat_id: req.params.seat_id } })
         if (seatBooked.length === 0) {
             respond.err(res , RESPONSE.SEAT_NOT_FOUND)
         }
         respond.ok(res , seatBooked)
     } catch (error) {
-        return respond.err(res , RESPONSE.INVALID)
+        console.log(error)
+        respond.err(res , RESPONSE.INVALID)
     }
 })
 

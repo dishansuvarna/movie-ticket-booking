@@ -72,6 +72,12 @@ button[type=submit]:hover {
     align-items: center;
 }
 
+#booking-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .movie {
     background-color: #fff;
     box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
@@ -138,6 +144,7 @@ button[type=submit]:hover {
     background-color: #0070f3;
     color: #fff;
     border: none;
+    margin-top: 30px;
 }
 
 .booking-form button[type=submit]:hover {
@@ -145,9 +152,50 @@ button[type=submit]:hover {
     cursor: pointer;
 }
 
+.payment-form {
+    margin-top: 20px;
+    display: inline-flex;
+    flex-direction: column;
+}
+
+.payment-form label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.payment-form input {
+    padding: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+}
+
+.payment-form button[type=submit] {
+    padding: 10px;
+    background-color: #0070f3;
+    color: #fff;
+    border: none;
+    margin-top: 10px;
+    width: fit-content;
+}
+
 .price-amount {
     font-weight: bold;
     margin-left: 10px;
+}
+
+.details {
+    background-color: #fff;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+    margin-bottom: 30px;
+    padding: 30px;
+    width: 30%;
+}
+
+.details h2 {
+    margin-top: 0;
+    margin-bottom: 50px;
+    text-align: center;
 }
 
 .seat {
@@ -172,6 +220,40 @@ button[type=submit]:hover {
     background-color: #ccc;
     color: #333;
     cursor: not-allowed;
+}
+
+#ticket {
+    width: 400px;
+    margin: 20px auto;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+}
+  
+#ticket h2 {
+    margin-top: 0;
+}
+  
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+  
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+  
+td:first-child {
+    font-weight: bold;
+}
+  
+#seat-numbers {
+    font-style: italic;
 }
 
 @media screen and (max-width: 768px) {

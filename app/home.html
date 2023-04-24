@@ -17,10 +17,45 @@
         </form>
         <div id="movie-list"></div>
         <div id="seats-container"></div>
+        <div id="booking-details"></div>
+        <div id="ticket">
+            <h2>Virtual Ticket</h2>
+            <table>
+                <tr>
+                    <td>Cinema:</td>
+                    <td id="cinema-name"></td>
+                </tr>
+                <tr>
+                    <td>Screen:</td>
+                    <td id="screen-name"></td>
+                </tr>
+                <tr>
+                    <td>Movie:</td>
+                    <td id="movieName"></td>
+                </tr>
+                <tr>
+                    <td>Start Time:</td>
+                    <td id="start-time"></td>
+                </tr>
+                <tr>
+                    <td>Seats:</td>
+                    <td id="seat-numbers"></td>
+                </tr>
+            </table>
+        </div>
     </div>
     <script>
         const searchForm = document.querySelector('#search-form');
         const movieList = document.querySelector('#movie-list');
+
+        const ticket = document.getElementById('ticket')
+        ticket.style.display = 'none'
+
+        const cinemaNameElement = document.getElementById("cinema-name");
+        const screenNameElement = document.getElementById("screen-name");
+        const movieNameElement = document.getElementById("movieName");
+        const startTimeElement = document.getElementById("start-time");
+        const seatNumbersElement = document.getElementById("seat-numbers");
 
         searchForm.addEventListener('submit', async (event) => {
             event.preventDefault();
@@ -30,6 +65,9 @@
 
             const seatsContainerElement = document.getElementById('seats-container');
             seatsContainerElement.innerHTML = ''
+
+            const bookingDetails = document.getElementById('booking-details')
+            bookingDetails.innerHTML = ''
 
             const response = await fetch('http://localhost:5000/movie/list' , {
                 method: 'POST',
@@ -136,6 +174,13 @@
                                             seatsByTypeAndAlphabet[seat.seat_type][alphabet].push(seat);
                                         });
 
+                                        const bookButton = document.createElement('button');
+                                        bookButton.type = 'submit';
+                                        bookButton.textContent = 'Book';
+                                        bookButton.style.display = 'none';
+
+                                        let selectedSeats;
+
                                         // loop through the seat types and create div elements for each type
                                         for (const type in seatsByTypeAndAlphabet) {
                                             const seatsByAlphabet = seatsByTypeAndAlphabet[type];
@@ -181,26 +226,37 @@
                                                 seatsContainer.classList.add('seats');
 
                                                 // loop through the seats of this alphabet and create a new seat element for each one
-                                                seatsOfType.forEach(seat => {
+                                                for (const seat of seatsOfType) {
+                                                    // const isAvailableResult = await isAvailable(seat.seat_id , show.show_id);
+
                                                     // create a new div element for the seat
                                                     const seatElement = document.createElement('div');
                                                     seatElement.classList.add('seat');
+                                                    seatElement.dataset.seatId = seat.seat_id;
                                                     seatElement.dataset.seatNumber = seat.seat_no;
-                                                    seatElement.dataset.isAvailable = isAvailable(seat.seat_id , show.show_id);
+                                                    seatElement.dataset.isAvailable = true;
                                                     seatElement.textContent = seat.seat_no;
 
                                                     // add event listener for selecting seats
                                                     seatElement.addEventListener('click', () => {
-                                                        if (isAvailable(seat.seat_id)) {
+                                                        if (seatElement.dataset.isAvailable) {
                                                             seatElement.classList.toggle('selected');
                                                         } else {
                                                             alert('This seat is already taken.');
+                                                        }
+
+                                                        selectedSeats = document.querySelectorAll('.seat.selected');
+
+                                                        if (selectedSeats.length > 0) {
+                                                            bookButton.style.display = 'block';
+                                                        } else {
+                                                            bookButton.style.display = 'none';
                                                         }
                                                     });
 
                                                     // add seat element to the seats container
                                                     seatsContainer.appendChild(seatElement);
-                                                });
+                                                };
 
                                                 // add the seats container to the seat alphabet div
                                                 seatAlphabetElement.appendChild(seatsContainer);
@@ -212,7 +268,122 @@
                                             // add the seat type div to the seats container
                                             seatsContainerElement.appendChild(seatTypeElement);
                                         }
+                                        const bookingForm = document.createElement('form');
+                                        bookingForm.className = 'booking-form'
+                                        bookingForm.appendChild(bookButton);
+                                        bookingForm.addEventListener('submit' , async (event) => {
+                                            event.preventDefault();
+                                            seatsContainerElement.innerHTML = ''
+                                            const bookingForm = event.currentTarget;
+                                            // const selectedSeats = document.querySelectorAll('.seat.selected');
+                                            const selectedSeatIDs = [];
+                                            selectedSeats.forEach(seat => {
+                                                selectedSeatIDs.push(seat.dataset.seatId);
+                                            });
+                                            const selectedSeatNumbers = [];
+                                            selectedSeats.forEach(seat => {
+                                                selectedSeatNumbers.push(seat.dataset.seatNumber);
+                                            });
+                                            const showId = show.show_id;
+
+                                            const details = document.createElement('div')
+                                            details.className = 'details'
+                                            
+                                            const bookSeatResponse = await fetch('http://localhost:5000/booking' , {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'token': localStorage.getItem('token')
+                                                },
+                                                body: JSON.stringify({ show_id: showId , seat_id: selectedSeatIDs })
+                                            })
+
+                                            const bookSeat = await bookSeatResponse.json()
+
+                                            details.innerHTML = `
+                                                <h2><strong>Booking Details</strong></h2>
+                                                <h4>Cinema: ${cinemas.data.name}</h4>
+                                                <h4>Screen: ${showtime.data.screen.name}</h4>
+                                                <h4>Movie: ${movie.movie_name}</h4>
+                                                <h4>Start Time: ${show.start_time}</h4>
+                                                <h4>Seat Number: ${selectedSeatNumbers.join(', ')}</h4>
+                                                <h4>Total Price: ${bookSeat.data.booking.total_price}</h4>
+                                            `;
+
+                                            const payButton = document.createElement('button');
+                                            payButton.type = 'submit'
+                                            payButton.textContent = 'Pay'
+
+                                            const paymentForm = document.createElement('form');
+                                            paymentForm.className = 'payment-form'
+
+                                            const label = document.createElement('label')
+                                            label.htmlFor = 'card-number'
+                                            label.textContent = 'Enter Card Details:'
+
+                                            const cardNumber = document.createElement('input')
+                                            cardNumber.id = 'card-number'
+                                            cardNumber.required = 'true'
+                                            cardNumber.type = 'tel'
+
+                                            paymentForm.appendChild(label)
+                                            paymentForm.appendChild(cardNumber)
+                                            paymentForm.appendChild(payButton);
+
+                                            details.appendChild(paymentForm)
+                                            bookingDetails.appendChild(details)
+
+                                            paymentForm.addEventListener('submit' , async (event) => {
+                                                event.preventDefault()
+
+                                                const formData = new FormData(paymentForm);
+                                                const card_number = formData.get('card-number');
+
+                                                const paymentResponse = await fetch('http://localhost:5000/payment' , {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        'token': localStorage.getItem('token')
+                                                    },
+                                                    body: JSON.stringify({ card_number })
+                                                })
+
+                                                const payment = await paymentResponse.json()
+
+                                                alert('Booking Confirmed')
+                                                
+                                                const cinemaName = `${cinemas.data.name}`;
+                                                const screenName = `${showtime.data.screen.name}`;
+                                                const movieName = `${movie.movie_name}`;
+                                                const startTime = `${show.start_time}`;
+                                                const seatNumbers = selectedSeatNumbers;
+
+                                                bookingDetails.innerHTML = ''
+
+                                                ticket.style.display = 'block'
+
+                                                cinemaNameElement.textContent = cinemaName;
+                                                screenNameElement.textContent = screenName;
+                                                movieNameElement.textContent = movieName;
+                                                startTimeElement.textContent = startTime;
+                                                seatNumbersElement.textContent = seatNumbers.join(", ");
+
+                                                const done = document.createElement('button')
+                                                done.textContent = 'Done'
+                                                done.type = 'submit'
+
+                                                ticket.appendChild(done)
+
+                                                done.addEventListener('click' , (event) => {
+                                                    event.preventDefault();
+                                                    window.location = './home.html'
+                                                })
+                                            })
+                                        });
+
+                                        seatsContainerElement.appendChild(bookingForm);
                                     })
+                                    
                                     showtimeList.appendChild(time);
                                 }
 
@@ -227,94 +398,63 @@
                         movieDiv.appendChild(cinemaList);
                     }
 
-                    const bookingForm = document.createElement('form');
-                    bookingForm.addEventListener('submit', handleBookingFormSubmit);
+                    // const seatLabel = document.createElement('label');
+                    // seatLabel.textContent = 'Select seats';
+                    // bookingForm.appendChild(seatLabel);
 
-                    const seatLabel = document.createElement('label');
-                    seatLabel.textContent = 'Select seats';
-                    bookingForm.appendChild(seatLabel);
+                    // const seatSelect = document.createElement('select');
+                    // seatSelect.name = 'seats';
+                    // seatSelect.required = true;
 
-                    const seatSelect = document.createElement('select');
-                    seatSelect.name = 'seats';
-                    seatSelect.required = true;
+                    // const seatOption = document.createElement('option');
+                    // seatOption.value = '';
+                    // seatOption.textContent = 'Select seats';
+                    // seatSelect.appendChild(seatOption);
 
-                    const seatOption = document.createElement('option');
-                    seatOption.value = '';
-                    seatOption.textContent = 'Select seats';
-                    seatSelect.appendChild(seatOption);
+                    // bookingForm.appendChild(seatSelect);
 
-                    bookingForm.appendChild(seatSelect);
+                    // const priceLabel = document.createElement('label');
+                    // priceLabel.textContent = 'Total price:';
+                    // bookingForm.appendChild(priceLabel);
 
-                    const priceLabel = document.createElement('label');
-                    priceLabel.textContent = 'Total price:';
-                    bookingForm.appendChild(priceLabel);
-
-                    const priceAmount = document.createElement('span');
-                    priceAmount.textContent = '0';
-                    priceAmount.className = 'price-amount';
-                    bookingForm.appendChild(priceAmount);
-
-                    const bookButton = document.createElement('button');
-                    bookButton.type = 'submit';
-                    bookButton.textContent = 'Book';
-                    bookingForm.appendChild(bookButton);
-
-                    // movieDiv.appendChild(bookingForm);
+                    // const priceAmount = document.createElement('span');
+                    // priceAmount.textContent = '0';
+                    // priceAmount.className = 'price-amount';
+                    // bookingForm.appendChild(priceAmount);
 
                     movieList.appendChild(movieDiv);
                 }
             }
         });
 
-        function handleBookingFormSubmit(event) {
-            event.preventDefault();
-            const bookingForm = event.currentTarget;
-            const seatSelect = bookingForm.querySelector('select[name=seats]');
-            const selectedSeats = seatSelect.value.split(',');
-            const showscreen = seatSelect.value.split('-');
-            const showId = showscreen[0];
-            const screenId = showscreen[1];
+        async function isAvailable(seat_id, show_id) {
 
-            // make a booking request to the server
-            // with the selected seats and the selected show id and screen id
-            // update the UI with the new booking info
-        }
+            const seatBookResponse = await fetch(`http://localhost:5000/cinema/seatBook/${seat_id}`, {
+                method: 'POST'
+            });
+            const seatBook = await seatBookResponse.json();
 
-        async function isAvailable (seat_id , show_id) {
-            const seatBookResponse = await fetch('http://localhost:5000/cinema/seatBook' , {
-                method: 'POST',
-                // headers: {
-                //     'Content-Type': 'application/json',
-                // },
-                body: JSON.stringify({ seat_id })
-            })
-            const seatBook = await seatBookResponse.json()
-
-            if (seatBook.code === 1006) {
-                return true
+            if (seatBook.data === undefined) {
+                return true; // seat not booked
             }
 
             if (seatBook.data !== undefined) {
-                seatBook.data.forEach(async (seat) => {
-                    const bookingResponse = await fetch('http://localhost:5000/booking/list' , {
-                        method: 'POST',
-                        // headers: {
-                        //     'Content-Type': 'application/json',
-                        // },
-                        body: JSON.stringify({ show_id })
-                    })
-                    const bookings = await bookingResponse.json()
+                for (const seat of seatBook.data) {
+                    const bookingResponse = await fetch(`http://localhost:5000/booking/list/${show_id}`, {
+                        method: 'POST'
+                    });
+                    const bookings = await bookingResponse.json();
 
                     if (bookings.data !== undefined) {
-                        bookings.data.forEach((booking) => {
+                        for (const booking of bookings.data) {
                             if (booking.booking_id === seat.booking_id) {
-                                return false
+                                return false; // seat already booked
                             }
-                        });
+                        }
                     }
-                    return true
-                });
+                }
             }
+            return true; // seat available
         }
     </script>
 </body>
