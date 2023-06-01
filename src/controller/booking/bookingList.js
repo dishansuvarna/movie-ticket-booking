@@ -7,6 +7,7 @@ const { RESPONSE } = require('../../../config')
 
 async function bookingList (req , res) {
     try {
+        
         const bookings = await Booking.findAll({ where: { show_id: req.params.show_id } })
         if (bookings.length === 0) {
             respond.err(res , RESPONSE.SHOW_NOT_FOUND)

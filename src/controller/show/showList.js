@@ -8,7 +8,7 @@ const { RESPONSE } = require('../../../config')
 async function showList ( req, res ) {
     try {
         if (req.body.show_id) {
-            const show = await Show.findOne({ where: { show_id: req.body.show_id } , attributes: ["show_id" , "movie_cinema_id" , "screen_id" , [sequelize.fn('date_format', sequelize.literal('start_time'), '%H:%i'), 'start_time']] })
+            const show = await Show.findOne({ where: { show_id: req.body.show_id } , attributes: ["show_id" , "movie_cinema_id" , "screen_id" , "show_date" , [sequelize.fn('date_format', sequelize.literal('start_time'), '%H:%i'), 'start_time']] })
             if (show.length === 0) {
                 return respond.err(res , RESPONSE.SHOW_NOT_FOUND)
             }
@@ -17,7 +17,7 @@ async function showList ( req, res ) {
         }
 
         if (req.body.movie_cinema_id) {
-            const show = await Show.findAll({ where: { movie_cinema_id: req.body.movie_cinema_id } , attributes: ["show_id" , "movie_cinema_id" , "screen_id" , [sequelize.fn('date_format', sequelize.literal('start_time'), '%H:%i'), 'start_time']] })
+            const show = await Show.findAll({ where: { movie_cinema_id: req.body.movie_cinema_id } , attributes: ["show_id" , "movie_cinema_id" , "screen_id" , "show_date" , [sequelize.fn('date_format', sequelize.literal('start_time'), '%H:%i'), 'start_time']] })
             if (show.length === 0) {
                 return respond.err(res , RESPONSE.SHOW_NOT_FOUND)
             }

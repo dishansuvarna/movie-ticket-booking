@@ -19,6 +19,8 @@
             <input type="number" name="screen_id" id="screen_id">
             <label for="start_time">Start Time</label>
             <input type="time" name="start_time" id="start_time">
+            <label for="show_date">Show Date</label>
+            <input type="date" name="show_date" id="show_date">
             <button type="submit" id="submit">EDIT</button>
         </form>
     </div>
@@ -32,6 +34,7 @@
             const movie_cinema_id = showEdit.movie_cinema_id.value;
             const screen_id = showEdit.screen_id.value;
             const start_time = showEdit.start_time.value
+            const show_date = showEdit.show_date.value
 
             try {
                 const response = await fetch('http://localhost:5000/cinema/show/edit', {
@@ -40,7 +43,7 @@
                         'Content-Type': 'application/json',
                         'token': localStorage.getItem('token')
                     },
-                    body: JSON.stringify({ show_id, movie_cinema_id, screen_id, start_time }) 
+                    body: JSON.stringify({ show_id, movie_cinema_id, screen_id, start_time, show_date }) 
                 });
 
                 const data = await response.json();

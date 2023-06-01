@@ -50,10 +50,22 @@ async function showEdit ( req, res ) {
         }
     }
 
-    if (req.body.start_time !== undefined) {
+    if (req.body.start_time) {
         try {
             await Show.update({
                 start_time: req.body.start_time
+            } , {
+                where: { show_id: req.body.show_id }
+            })
+        } catch (error) {
+            return respond.err(res , RESPONSE.INVALID)
+        }
+    }
+
+    if (req.body.show_date) {
+        try {
+            await Show.update({
+                show_date: req.body.show_date
             } , {
                 where: { show_id: req.body.show_id }
             })

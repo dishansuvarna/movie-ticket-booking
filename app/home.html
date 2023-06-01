@@ -135,266 +135,296 @@
                             if (!showtime.data) {
                                 cinemaList.innerHTML += `<li>${cinemas.data.name}: Not showing</li>`;
                             } else {
-                                const showtimeList = document.createElement('ul');
-
+                                const showByDate = {}
                                 for (const show of showtime.data.show) {
-                                    const time = document.createElement('div');
-                                    time.id = 'show-time'
-                                    const option = document.createElement('option');
-                                    option.value = `${show.show_id}-${show.screen_id}`;
-                                    option.textContent = `${show.start_time}`;
-                                    time.appendChild(option)
+                                    if (!showByDate[show.show_date]) {
+                                        showByDate[show.show_date] = [];
+                                    }
+                                    showByDate[show.show_date].push(show)
+                                }
 
-                                    time.addEventListener('click' , async (event) => {
-                                        event.preventDefault()
-                                        movieList.innerHTML = ''
+                                let previousDate;
+                                
+                                for (const date in showByDate) {
+                                    const showtimeList = document.createElement('ul');
+                                    const cinemaItem = document.createElement('li');
+                                    cinemaItem.innerHTML = `${cinemas.data.name}`;
 
-                                        const seatResponse = await fetch('http://localhost:5000/cinema/seat/list' , {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json',
-                                            },
-                                            body: JSON.stringify({ screen_id: show.screen_id })
-                                        })
-                                        const seats = await seatResponse.json()
-                                        // create an object to store seats by type and alphabet
-                                        const seatsByTypeAndAlphabet = {};
+                                    for (const show of showByDate[date]) {
+                                        const time = document.createElement('div');
+                                        time.id = 'show-time'
+                                        const option = document.createElement('option');
+                                        option.value = `${show.show_id}-${show.screen_id}`;
+                                        option.textContent = `${show.start_time}`;
+                                        time.appendChild(option)
 
-                                        // loop through the seat data and group the seats by type and alphabet
-                                        seats.data.seat.forEach(seat => {
-                                            if (!seatsByTypeAndAlphabet[seat.seat_type]) {
-                                                seatsByTypeAndAlphabet[seat.seat_type] = {};
-                                            }
+                                        time.addEventListener('click' , async (event) => {
+                                            event.preventDefault()
+                                            movieList.innerHTML = ''
 
-                                            const alphabet = seat.seat_no.charAt(0);
-                                            if (!seatsByTypeAndAlphabet[seat.seat_type][alphabet]) {
-                                                seatsByTypeAndAlphabet[seat.seat_type][alphabet] = [];
-                                            }
-
-                                            seatsByTypeAndAlphabet[seat.seat_type][alphabet].push(seat);
-                                        });
-
-                                        const bookButton = document.createElement('button');
-                                        bookButton.type = 'submit';
-                                        bookButton.textContent = 'Book';
-                                        bookButton.style.display = 'none';
-
-                                        let selectedSeats;
-
-                                        // loop through the seat types and create div elements for each type
-                                        for (const type in seatsByTypeAndAlphabet) {
-                                            const seatsByAlphabet = seatsByTypeAndAlphabet[type];
-
-                                            // create a new div element for the seat type
-                                            const seatTypeElement = document.createElement('div');
-                                            seatTypeElement.classList.add('seat-type');
-                                            seatTypeElement.dataset.seatType = type;
-
-                                            // create a new heading element for the seat type
-                                            const seatTypeHeading = document.createElement('h2');
-                                            if (type === '1') {
-                                                seatTypeHeading.textContent = "VIP";
-                                            } 
-                                            if (type === '2') {
-                                                seatTypeHeading.textContent = "GOLD";
-                                            }
-                                            if (type === '3') {
-                                                seatTypeHeading.textContent = "SILVER";
-                                            }
-
-                                            // add the heading element to the seat type div
-                                            seatTypeElement.appendChild(seatTypeHeading);
-
-                                            // loop through the seat alphabet keys and create div elements for each alphabet
-                                            for (const alphabet in seatsByAlphabet) {
-                                                const seatsOfType = seatsByAlphabet[alphabet];
-
-                                                // create a new div element for the seat alphabet
-                                                const seatAlphabetElement = document.createElement('div');
-                                                seatAlphabetElement.classList.add('seat-alphabet');
-                                                seatAlphabetElement.dataset.alphabet = alphabet;
-
-                                                // create a new heading element for the seat alphabet
-                                                // const seatAlphabetHeading = document.createElement('h3');
-                                                // seatAlphabetHeading.textContent = `Seats starting with ${alphabet}`;
-
-                                                // add the heading element to the seat alphabet div
-                                                // seatAlphabetElement.appendChild(seatAlphabetHeading);
-
-                                                // create a new div element for the seats
-                                                const seatsContainer = document.createElement('div');
-                                                seatsContainer.classList.add('seats');
-
-                                                // loop through the seats of this alphabet and create a new seat element for each one
-                                                for (const seat of seatsOfType) {
-                                                    // const isAvailableResult = await isAvailable(seat.seat_id , show.show_id);
-
-                                                    // create a new div element for the seat
-                                                    const seatElement = document.createElement('div');
-                                                    seatElement.classList.add('seat');
-                                                    seatElement.dataset.seatId = seat.seat_id;
-                                                    seatElement.dataset.seatNumber = seat.seat_no;
-                                                    seatElement.dataset.isAvailable = true;
-                                                    seatElement.textContent = seat.seat_no;
-
-                                                    // add event listener for selecting seats
-                                                    seatElement.addEventListener('click', () => {
-                                                        if (seatElement.dataset.isAvailable) {
-                                                            seatElement.classList.toggle('selected');
-                                                        } else {
-                                                            alert('This seat is already taken.');
-                                                        }
-
-                                                        selectedSeats = document.querySelectorAll('.seat.selected');
-
-                                                        if (selectedSeats.length > 0) {
-                                                            bookButton.style.display = 'block';
-                                                        } else {
-                                                            bookButton.style.display = 'none';
-                                                        }
-                                                    });
-
-                                                    // add seat element to the seats container
-                                                    seatsContainer.appendChild(seatElement);
-                                                };
-
-                                                // add the seats container to the seat alphabet div
-                                                seatAlphabetElement.appendChild(seatsContainer);
-
-                                                // add the seat alphabet div to the seat type div
-                                                seatTypeElement.appendChild(seatAlphabetElement);
-                                            }
-
-                                            // add the seat type div to the seats container
-                                            seatsContainerElement.appendChild(seatTypeElement);
-                                        }
-                                        const bookingForm = document.createElement('form');
-                                        bookingForm.className = 'booking-form'
-                                        bookingForm.appendChild(bookButton);
-                                        bookingForm.addEventListener('submit' , async (event) => {
-                                            event.preventDefault();
-                                            seatsContainerElement.innerHTML = ''
-                                            const bookingForm = event.currentTarget;
-                                            // const selectedSeats = document.querySelectorAll('.seat.selected');
-                                            const selectedSeatIDs = [];
-                                            selectedSeats.forEach(seat => {
-                                                selectedSeatIDs.push(seat.dataset.seatId);
-                                            });
-                                            const selectedSeatNumbers = [];
-                                            selectedSeats.forEach(seat => {
-                                                selectedSeatNumbers.push(seat.dataset.seatNumber);
-                                            });
-                                            const showId = show.show_id;
-
-                                            const details = document.createElement('div')
-                                            details.className = 'details'
-                                            
-                                            const bookSeatResponse = await fetch('http://localhost:5000/booking' , {
+                                            const seatResponse = await fetch('http://localhost:5000/cinema/seat/list' , {
                                                 method: 'POST',
                                                 headers: {
                                                     'Content-Type': 'application/json',
-                                                    'token': localStorage.getItem('token')
                                                 },
-                                                body: JSON.stringify({ show_id: showId , seat_id: selectedSeatIDs })
+                                                body: JSON.stringify({ screen_id: show.screen_id , show_id: show.show_id })
                                             })
+                                            const seats = await seatResponse.json()
+                                            // create an object to store seats by type and alphabet
+                                            const seatsByTypeAndAlphabet = {};
 
-                                            const bookSeat = await bookSeatResponse.json()
+                                            // loop through the seat data and group the seats by type and alphabet
+                                            seats.data.seat.forEach(seat => {
+                                                if (!seatsByTypeAndAlphabet[seat.seat_type]) {
+                                                    seatsByTypeAndAlphabet[seat.seat_type] = {};
+                                                }
 
-                                            details.innerHTML = `
-                                                <h2><strong>Booking Details</strong></h2>
-                                                <h4>Cinema: ${cinemas.data.name}</h4>
-                                                <h4>Screen: ${showtime.data.screen.name}</h4>
-                                                <h4>Movie: ${movie.movie_name}</h4>
-                                                <h4>Start Time: ${show.start_time}</h4>
-                                                <h4>Seat Number: ${selectedSeatNumbers.join(', ')}</h4>
-                                                <h4>Total Price: ${bookSeat.data.booking.total_price}</h4>
-                                            `;
+                                                const alphabet = seat.seat_no.charAt(0);
+                                                if (!seatsByTypeAndAlphabet[seat.seat_type][alphabet]) {
+                                                    seatsByTypeAndAlphabet[seat.seat_type][alphabet] = [];
+                                                }
 
-                                            const payButton = document.createElement('button');
-                                            payButton.type = 'submit'
-                                            payButton.textContent = 'Pay'
+                                                seatsByTypeAndAlphabet[seat.seat_type][alphabet].push(seat);
+                                            });
 
-                                            const paymentForm = document.createElement('form');
-                                            paymentForm.className = 'payment-form'
+                                            const bookButton = document.createElement('button');
+                                            bookButton.type = 'submit';
+                                            bookButton.textContent = 'Book';
+                                            bookButton.style.display = 'none';
 
-                                            const label = document.createElement('label')
-                                            label.htmlFor = 'card-number'
-                                            label.textContent = 'Enter Card Details:'
+                                            let selectedSeats;
 
-                                            const cardNumber = document.createElement('input')
-                                            cardNumber.id = 'card-number'
-                                            cardNumber.required = 'true'
-                                            cardNumber.type = 'tel'
+                                            // loop through the seat types and create div elements for each type
+                                            for (const type in seatsByTypeAndAlphabet) {
+                                                const seatsByAlphabet = seatsByTypeAndAlphabet[type];
 
-                                            paymentForm.appendChild(label)
-                                            paymentForm.appendChild(cardNumber)
-                                            paymentForm.appendChild(payButton);
+                                                // create a new div element for the seat type
+                                                const seatTypeElement = document.createElement('div');
+                                                seatTypeElement.classList.add('seat-type');
+                                                seatTypeElement.dataset.seatType = type;
 
-                                            details.appendChild(paymentForm)
-                                            bookingDetails.appendChild(details)
+                                                // create a new heading element for the seat type
+                                                const seatTypeHeading = document.createElement('h2');
+                                                if (type === '1') {
+                                                    seatTypeHeading.textContent = "VIP";
+                                                } 
+                                                if (type === '2') {
+                                                    seatTypeHeading.textContent = "GOLD";
+                                                }
+                                                if (type === '3') {
+                                                    seatTypeHeading.textContent = "SILVER";
+                                                }
 
-                                            paymentForm.addEventListener('submit' , async (event) => {
-                                                event.preventDefault()
+                                                // add the heading element to the seat type div
+                                                seatTypeElement.appendChild(seatTypeHeading);
 
-                                                const formData = new FormData(paymentForm);
-                                                const card_number = formData.get('card-number');
+                                                // loop through the seat alphabet keys and create div elements for each alphabet
+                                                for (const alphabet in seatsByAlphabet) {
+                                                    const seatsOfType = seatsByAlphabet[alphabet];
 
-                                                const paymentResponse = await fetch('http://localhost:5000/payment' , {
+                                                    // create a new div element for the seat alphabet
+                                                    const seatAlphabetElement = document.createElement('div');
+                                                    seatAlphabetElement.classList.add('seat-alphabet');
+                                                    seatAlphabetElement.dataset.alphabet = alphabet;
+
+                                                    // create a new heading element for the seat alphabet
+                                                    // const seatAlphabetHeading = document.createElement('h3');
+                                                    // seatAlphabetHeading.textContent = `Seats starting with ${alphabet}`;
+
+                                                    // add the heading element to the seat alphabet div
+                                                    // seatAlphabetElement.appendChild(seatAlphabetHeading);
+
+                                                    // create a new div element for the seats
+                                                    const seatsContainer = document.createElement('div');
+                                                    seatsContainer.classList.add('seats');
+
+                                                    // loop through the seats of this alphabet and create a new seat element for each one
+                                                    for (const seat of seatsOfType) {
+                                                        // const isAvailableResult = await isAvailable(seat.seat_id , show.show_id);
+
+                                                        // create a new div element for the seat
+                                                        const seatElement = document.createElement('div');
+                                                        seatElement.classList.add('seat');
+                                                        seatElement.dataset.seatId = seat.seat_id;
+                                                        seatElement.dataset.seatNumber = seat.seat_no;
+                                                        seatElement.textContent = seat.seat_no;
+                                                        
+                                                        if (seat.isBooked) {
+                                                            seatElement.dataset.isAvailable = false;
+                                                        } else {
+                                                            seatElement.dataset.isAvailable = true;
+                                                        }
+
+                                                        // add event listener for selecting seats
+                                                        seatElement.addEventListener('click', () => {
+                                                            const isAvailable = seatElement.dataset.isAvailable === 'true';
+
+                                                            if (isAvailable) {
+                                                                seatElement.classList.toggle('selected');
+                                                            } else {
+                                                                alert('This seat is already taken.');
+                                                            }
+
+                                                            selectedSeats = document.querySelectorAll('.seat.selected');
+
+                                                            if (selectedSeats.length > 0) {
+                                                                bookButton.style.display = 'block';
+                                                            } else {
+                                                                bookButton.style.display = 'none';
+                                                            }
+                                                        });
+
+                                                        // add seat element to the seats container
+                                                        seatsContainer.appendChild(seatElement);
+                                                    };
+
+                                                    // add the seats container to the seat alphabet div
+                                                    seatAlphabetElement.appendChild(seatsContainer);
+
+                                                    // add the seat alphabet div to the seat type div
+                                                    seatTypeElement.appendChild(seatAlphabetElement);
+                                                }
+
+                                                // add the seat type div to the seats container
+                                                seatsContainerElement.appendChild(seatTypeElement);
+                                            }
+                                            const bookingForm = document.createElement('form');
+                                            bookingForm.className = 'booking-form'
+                                            bookingForm.appendChild(bookButton);
+                                            bookingForm.addEventListener('submit' , async (event) => {
+                                                event.preventDefault();
+                                                seatsContainerElement.innerHTML = ''
+                                                const bookingForm = event.currentTarget;
+                                                // const selectedSeats = document.querySelectorAll('.seat.selected');
+                                                const selectedSeatIDs = [];
+                                                selectedSeats.forEach(seat => {
+                                                    selectedSeatIDs.push(seat.dataset.seatId);
+                                                });
+                                                const selectedSeatNumbers = [];
+                                                selectedSeats.forEach(seat => {
+                                                    selectedSeatNumbers.push(seat.dataset.seatNumber);
+                                                });
+                                                const showId = show.show_id;
+
+                                                const details = document.createElement('div')
+                                                details.className = 'details'
+                                                
+                                                const bookSeatResponse = await fetch('http://localhost:5000/booking' , {
                                                     method: 'POST',
                                                     headers: {
                                                         'Content-Type': 'application/json',
                                                         'token': localStorage.getItem('token')
                                                     },
-                                                    body: JSON.stringify({ card_number })
+                                                    body: JSON.stringify({ show_id: showId , seat_id: selectedSeatIDs })
                                                 })
 
-                                                const payment = await paymentResponse.json()
+                                                const bookSeat = await bookSeatResponse.json()
 
-                                                alert('Booking Confirmed')
-                                                
-                                                const cinemaName = `${cinemas.data.name}`;
-                                                const screenName = `${showtime.data.screen.name}`;
-                                                const movieName = `${movie.movie_name}`;
-                                                const startTime = `${show.start_time}`;
-                                                const seatNumbers = selectedSeatNumbers;
+                                                details.innerHTML = `
+                                                    <h2><strong>Booking Details</strong></h2>
+                                                    <h4>Cinema: ${cinemas.data.name}</h4>
+                                                    <h4>Screen: ${showtime.data.screen.name}</h4>
+                                                    <h4>Movie: ${movie.movie_name}</h4>
+                                                    <h4>Start Time: ${show.start_time}</h4>
+                                                    <h4>Seat Number: ${selectedSeatNumbers.join(', ')}</h4>
+                                                    <h4>Total Price: ${bookSeat.data.booking.total_price}</h4>
+                                                `;
 
-                                                bookingDetails.innerHTML = ''
+                                                const payButton = document.createElement('button');
+                                                payButton.type = 'submit'
+                                                payButton.textContent = 'Pay'
 
-                                                ticket.style.display = 'block'
+                                                const paymentForm = document.createElement('form');
+                                                paymentForm.className = 'payment-form'
 
-                                                cinemaNameElement.textContent = cinemaName;
-                                                screenNameElement.textContent = screenName;
-                                                movieNameElement.textContent = movieName;
-                                                startTimeElement.textContent = startTime;
-                                                seatNumbersElement.textContent = seatNumbers.join(", ");
+                                                const label = document.createElement('label')
+                                                label.htmlFor = 'card-number'
+                                                label.textContent = 'Enter Card Details:'
 
-                                                const done = document.createElement('button')
-                                                done.textContent = 'Done'
-                                                done.type = 'submit'
+                                                const cardNumber = document.createElement('input')
+                                                cardNumber.id = 'card-number'
+                                                cardNumber.required = 'true'
+                                                cardNumber.type = 'tel'
 
-                                                ticket.appendChild(done)
+                                                paymentForm.appendChild(label)
+                                                paymentForm.appendChild(cardNumber)
+                                                paymentForm.appendChild(payButton);
 
-                                                done.addEventListener('click' , (event) => {
-                                                    event.preventDefault();
-                                                    window.location = './home.html'
+                                                details.appendChild(paymentForm)
+                                                bookingDetails.appendChild(details)
+
+                                                paymentForm.addEventListener('submit' , async (event) => {
+                                                    event.preventDefault()
+
+                                                    const formData = new FormData(paymentForm);
+                                                    const card_number = formData.get('card-number');
+
+                                                    const paymentResponse = await fetch('http://localhost:5000/payment' , {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                            'token': localStorage.getItem('token')
+                                                        },
+                                                        body: JSON.stringify({ card_number })
+                                                    })
+
+                                                    const payment = await paymentResponse.json()
+
+                                                    alert('Booking Confirmed')
+                                                    
+                                                    const cinemaName = `${cinemas.data.name}`;
+                                                    const screenName = `${showtime.data.screen.name}`;
+                                                    const movieName = `${movie.movie_name}`;
+                                                    const startTime = `${show.start_time}`;
+                                                    const seatNumbers = selectedSeatNumbers;
+
+                                                    bookingDetails.innerHTML = ''
+
+                                                    ticket.style.display = 'block'
+
+                                                    cinemaNameElement.textContent = cinemaName;
+                                                    screenNameElement.textContent = screenName;
+                                                    movieNameElement.textContent = movieName;
+                                                    startTimeElement.textContent = startTime;
+                                                    seatNumbersElement.textContent = seatNumbers.join(", ");
+
+                                                    const done = document.createElement('button')
+                                                    done.textContent = 'Done'
+                                                    done.type = 'submit'
+
+                                                    ticket.appendChild(done)
+
+                                                    done.addEventListener('click' , (event) => {
+                                                        event.preventDefault();
+                                                        window.location = './home.html'
+                                                    })
                                                 })
-                                            })
-                                        });
+                                            });
 
-                                        seatsContainerElement.appendChild(bookingForm);
-                                    })
+                                            seatsContainerElement.appendChild(bookingForm);
+                                        })
+                                        
+                                        showtimeList.appendChild(time);
+                                    }
+
+                                    if (date !== previousDate) {
+                                        const dateContainer = document.createElement('div');
+                                        dateContainer.classList.add('date');
+                                        const dateHeading = document.createElement('h2');
+                                        dateHeading.textContent = date;
+                                        dateContainer.appendChild(dateHeading);
+                                        dateContainer.appendChild(cinemaItem);
+                                        dateContainer.appendChild(showtimeList);
+                                        cinemaList.appendChild(dateContainer);
+                                    } else {
+                                        cinemaList.lastElementChild.lastElementChild.appendChild(showtimeList);
+                                    }
+
+                                    previousDate = date;
                                     
-                                    showtimeList.appendChild(time);
                                 }
-
-                                const cinemaItem = document.createElement('li');
-                                cinemaItem.innerHTML = `${cinemas.data.name}`;
-                                cinemaItem.appendChild(showtimeList);
-
-                                cinemaList.appendChild(cinemaItem);
                             }
                         }
-
                         movieDiv.appendChild(cinemaList);
                     }
 
@@ -427,35 +457,38 @@
             }
         });
 
-        async function isAvailable(seat_id, show_id) {
+        // async function isAvailable(seat_id, show_id) {
+        //     try {
+        //         const seatBookResponse = await fetch(`http://localhost:5000/cinema/seatBook/${seat_id}`, {
+        //             // method: 'POST'
+        //         });
+        //         const seatBook = await seatBookResponse.json();
 
-            const seatBookResponse = await fetch(`http://localhost:5000/cinema/seatBook/${seat_id}`, {
-                method: 'POST'
-            });
-            const seatBook = await seatBookResponse.json();
+        //         if (seatBook.data === undefined) {
+        //             return true; // seat not booked
+        //         }
 
-            if (seatBook.data === undefined) {
-                return true; // seat not booked
-            }
+        //         if (seatBook.data !== undefined) {
+        //             for (const seat of seatBook.data) {
+        //                 const bookingResponse = await fetch(`http://localhost:5000/booking/list/${show_id}`, {
+        //                     // method: 'POST'
+        //                 });
+        //                 const bookings = await bookingResponse.json();
 
-            if (seatBook.data !== undefined) {
-                for (const seat of seatBook.data) {
-                    const bookingResponse = await fetch(`http://localhost:5000/booking/list/${show_id}`, {
-                        method: 'POST'
-                    });
-                    const bookings = await bookingResponse.json();
-
-                    if (bookings.data !== undefined) {
-                        for (const booking of bookings.data) {
-                            if (booking.booking_id === seat.booking_id) {
-                                return false; // seat already booked
-                            }
-                        }
-                    }
-                }
-            }
-            return true; // seat available
-        }
+        //                 if (bookings.data !== undefined) {
+        //                     for (const booking of bookings.data) {
+        //                         if (booking.booking_id === seat.booking_id) {
+        //                             return false; // seat already booked
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //         return true; // seat available
+        //     } catch (error) {
+        //         console.log(error)
+        //     }
+        // }
     </script>
 </body>
 </html>

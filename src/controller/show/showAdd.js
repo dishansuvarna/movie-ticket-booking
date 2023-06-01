@@ -24,9 +24,10 @@ async function showAdd ( req, res ) {
         const show = await Show.create({
             movie_cinema_id: movieCinemas.movie_cinema_id ,
             screen_id: screen.screen_id ,
-            start_time: req.body.start_time
+            start_time: req.body.start_time ,
+            show_date: req.body.show_date
         })
-        return respond.ok(res , { show_id: show.show_id , movie_cinema_id: movieCinemas.movie_cinema_id , screen_id: screen.screen_id , start_time: show.start_time })
+        return respond.ok(res , show)
     } catch (error) {
         return respond.err(res , RESPONSE.INVALID)
     }

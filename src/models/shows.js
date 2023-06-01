@@ -25,6 +25,10 @@ const Show = sequelize.define('shows' , {
         type: DataTypes.TIME,
         allowNull: false
     } ,
+    show_date: {
+        type: DataTypes.DATEONLY,
+        allowNull: false
+    } ,
     status: {
         type: DataTypes.INTEGER,
         defaultValue: null
@@ -35,5 +39,5 @@ const Show = sequelize.define('shows' , {
     createdAt: 'created_at',
 })
 
-// Show.sync({ force: true })
+// Show.sync({ alter: true })
 module.exports = Show
